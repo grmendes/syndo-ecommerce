@@ -1,0 +1,23 @@
+version: "2.0"
+
+services:
+  drupal:
+    container_name: "syndo-drupal"
+    build: docker
+    ports: 
+      - "8080:80"
+    volumes:
+      - ./drupal/modules:/var/www/html/modules
+      - ./drupal/profiles:/var/www/html/profiles
+      - ./drupal/themes:/var/www/html/themes
+      - ./drupal/sites:/var/www/html/sites
+    restart: always
+
+  mysql:
+    container_name: "syndo-mysql"
+    image: mysql:5.6
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: syndoecommercedb
+      MYSQL_USER: syndoecommercedb
+      MYSQL_PASSWORD: syndoecommercedb
