@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * @file
+ * Contains syndo_ecommerce.module
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function syndo_ecommerce_theme($existing, $type, $theme, $path) {
+  $variables = array(
+    'form__syndo_ecommerce_form' => array(
+      'render element' => 'form',
+      'template' => 'form--syndo_ecommerce--form',
+    ),
+  );
+  return $variables;
+}
+
+function syndo_ecommerce_form_user_login_alter(&$form, FormStateInterface $form_state, $form_id) {
+  print_r('Hello WOrld!');die;
+}
+
+function syndo_ecommerce_entity_type_alter(array &$entity_types) {
+  $entity_types['user']->setFormClass('register', '\Drupal\syndo_ecommerce\Form\NewRegisterForm');
+}

@@ -1,0 +1,10 @@
+name: Syndo Ecommerce
+type: module
+description: Module customizations for ecommerce service
+# core: 8.x
+package: Syndo
+
+version: '8.x-1.0'
+core: '8.x'
+project: 'syndo_ecommerce'
+datestamp: 1525467635
