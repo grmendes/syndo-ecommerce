@@ -4,8 +4,10 @@
  * Contains \Drupal\syndo_ecommerce\Form\WorkForm.
  */
 namespace Drupal\syndo_ecommerce\Form;
+
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+
 class DeliveryForm extends FormBase {
   /**
    * {@inheritdoc}
@@ -41,12 +43,13 @@ class DeliveryForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    drupal_set_message($this->t('@emp_name ,Your application is being submitted!', array('@emp_name' => $form_state->getValue('zipcode'))));
-
+    $cep = $form_state->getValue('zipcode');
     /*
      * @TODO: Chamar api com o CEP passado.
     */
+    $frete = 10.0;
 
-    $form_state->set('frete', 10.0);
+    $form_state->set('frete', $frete);
+    $form_state->setRebuild();
   }
 }
