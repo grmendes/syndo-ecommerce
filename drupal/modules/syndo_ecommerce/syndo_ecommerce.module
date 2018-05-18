@@ -5,6 +5,10 @@
  * Contains syndo_ecommerce.module
  */
 
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\syndo_ecommerce\Api\Client\Domain\Model\Client;
+
 /**
  * Implements hook_theme().
  */
@@ -18,10 +22,90 @@ function syndo_ecommerce_theme($existing, $type, $theme, $path) {
   return $variables;
 }
 
-function syndo_ecommerce_form_user_login_alter(&$form, FormStateInterface $form_state, $form_id) {
-  print_r('Hello WOrld!');die;
+function syndo_ecommerce_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+    array_unshift($form['#validate'], 'syndo_ecommerce_user_register_form_validate');
+    $form['data'] = [];
+
+    $form['data']['cpf'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('CPF'),
+    ];
+
+    $form['data']['nome'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Full Name'),
+    ];
+
+    $form['data']['zipcode'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Zipcode'),
+    ];
+
+    $form['data']['birthdate'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Birthdate'),
+    ];
+
+    $form['data']['phone'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Phone'),
+    ];
+
+    $form['data']['gender'] = [
+        '#type' => 'select',
+        '#required' => TRUE,
+        '#title' => t('Gender'),
+        '#options' => [
+            'male' => t('Male'),
+            'female' => t('Female'),
+        ]
+    ];
+}
+
+function syndo_ecommerce_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 }
 
 function syndo_ecommerce_entity_type_alter(array &$entity_types) {
-  $entity_types['user']->setFormClass('register', '\Drupal\syndo_ecommerce\Form\NewRegisterForm');
+}
+
+function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+    array_unshift($form['actions']['submit']['#submit'], 'syndo_ecommerce_user_register_form_submit');
+
+    array_unshift($form['#validate'], 'syndo_ecommerce_user_register_form_validate');
+    var_dump($form['actions']['submit']['#submit']);
+    var_dump($form['#validate']);
+    $form['data'] = [
+
+    ];
+}
+
+function syndo_ecommerce_user_register_form_validate(&$form, FormStateInterface $form_state) {
+
+    $newUser = new Client(
+        '',
+        $form_state->getValue('nome'),
+        $form_state->getValue('mail'),
+        $form_state->getValue('zipcode'),
+        $form_state->getValue('phone'),
+        '',
+        $form_state->getValue('cpf'),
+        $form_state->getValue('gender'),
+        $form_state->getValue('birthdate'),
+        ''
+    );
+
+    $newUser->save();
+
+    $form_state->setError($form['data']['cpf'], 'Something went wrong');
+}
+
+function syndo_ecommerce_user_register_form_submit(&$form, FormStateInterface $form_state) {
+    var_dump($form_state->getValues());
+
+
 }
