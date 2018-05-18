@@ -7,6 +7,7 @@
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\syndo_ecommerce\Api\Client\Domain\Model\Client;
 
 /**
  * Implements hook_theme().
@@ -22,6 +23,7 @@ function syndo_ecommerce_theme($existing, $type, $theme, $path) {
 }
 
 function syndo_ecommerce_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+    array_unshift($form['#validate'], 'syndo_ecommerce_user_register_form_validate');
     $form['data'] = [];
 
     $form['data']['cpf'] = [
@@ -54,7 +56,7 @@ function syndo_ecommerce_form_user_register_form_alter(&$form, FormStateInterfac
         '#title' => t('Phone'),
     ];
 
-    $form['data']['phone'] = [
+    $form['data']['gender'] = [
         '#type' => 'select',
         '#required' => TRUE,
         '#title' => t('Gender'),
@@ -83,8 +85,23 @@ function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface
 }
 
 function syndo_ecommerce_user_register_form_validate(&$form, FormStateInterface $form_state) {
-    var_dump($form_state->getValues());die;
 
+    $newUser = new Client(
+        '',
+        $form_state->getValue('nome'),
+        $form_state->getValue('mail'),
+        $form_state->getValue('zipcode'),
+        $form_state->getValue('phone'),
+        '',
+        $form_state->getValue('cpf'),
+        $form_state->getValue('gender'),
+        $form_state->getValue('birthdate'),
+        ''
+    );
+
+    $newUser->save();
+
+    $form_state->setError($form['data']['cpf'], 'Something went wrong');
 }
 
 function syndo_ecommerce_user_register_form_submit(&$form, FormStateInterface $form_state) {
