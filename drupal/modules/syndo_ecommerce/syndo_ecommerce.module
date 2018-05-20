@@ -10,7 +10,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\syndo_ecommerce\Api\Client\Domain\Model\Client;
 
 
-//include 'libs/cadastrar_produto.php';
+include 'libs/produto.php';
+include 'libs/categoria.php';
 
 /**
  * Implements hook_theme().
@@ -77,9 +78,9 @@ function syndo_ecommerce_entity_type_alter(array &$entity_types) {
 }
 
 function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-    array_unshift($form['actions']['submit']['#submit'], 'syndo_ecommerce_user_register_form_submit');
+    array_unshift($form['actions']['submit']['#submit'], 'syndo_ecommerce_node_product_form_submit');
 
-    array_unshift($form['#validate'], 'syndo_ecommerce_user_register_form_validate');
+//    array_unshift($form['#validate'], 'syndo_ecommerce_node_product_form_validate');
 //    var_dump($form['actions']['submit']['#submit']);
 //    var_dump($form['#validate']);
     $form['data'] = [
@@ -94,11 +95,24 @@ function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface
         '#title' => t('Codigo Produto'),
     ];
 
-    $form['data']['categoria'] = [
-        '#type' => 'textfield',
+    $categorias = consultarCategoria();
+
+	$options = array();
+	foreach ($categorias as $categoria) {
+    	$options[$categoria["idcategoria"]] = $categoria["nome"];
+	}
+
+
+    $form['data']['idcategoria'] = [
+        '#type' => 'select',
         '#required' => TRUE,
         '#title' => t('Categoria'),
-    ];
+        '#options' => $options /*[
+        	for ($i = 0; $i < count($categorias); $i++) {
+     			 $categorias[$i]["idcategoria"] => $categorias[$i]["nome"]
+    		}
+        ]*/
+    ];    
 
     $form['data']['preco'] = [
         '#type' => 'textfield',
@@ -169,10 +183,16 @@ function syndo_ecommerce_user_register_form_submit(&$form, FormStateInterface $f
 //    var_dump($form_state->getValues());
 //    var_dump($form_state->getValue('preco'));
 
+}
 
-//    cadastrarProduto('COD04', 'Meia de Lã Elza Frozen', 300, 10.9, 1.2, 1.0, 3.0, 2.0, 'img.jpg', ['idcampo' => 1, 'valor' => 30]);
+
+function syndo_ecommerce_node_product_form_submit(&$form, FormStateInterface $form_state) {
+//    var_dump($form_state->getValues());
+//	var_dump($form_state->getValue('title')[0]['value']);
+//	var_dump($form_state->getValue('codigo'));
 
 
+	cadastrarProduto($form_state->getValue('codigo'), $form_state->getValue('title')[0]['value'], $form_state->getValue('idcategoria'), $form_state->getValue('preco'), $form_state->getValue('peso'), $form_state->getValue('dimensao_a'), $form_state->getValue('dimensao_c'), $form_state->getValue('dimensao_l'), 'img.jpg', ['idcampo' => 1, 'valor' => 30]);
 
 //dar get value no field_idproduto para ver o formato e dar o set igual
 
