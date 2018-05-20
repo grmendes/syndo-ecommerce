@@ -12,6 +12,7 @@ use Drupal\syndo_ecommerce\Api\Client\Domain\Model\Client;
 
 include 'libs/produto.php';
 include 'libs/categoria.php';
+include 'libs/campo.php';
 
 /**
  * Implements hook_theme().
@@ -39,34 +40,34 @@ function syndo_ecommerce_form_user_register_form_alter(&$form, FormStateInterfac
     $form['data']['nome'] = [
         '#type' => 'textfield',
         '#required' => TRUE,
-        '#title' => t('Full Name'),
+        '#title' => t('Nome Completo'),
     ];
 
     $form['data']['zipcode'] = [
         '#type' => 'textfield',
         '#required' => TRUE,
-        '#title' => t('Zipcode'),
+        '#title' => t('CEP'),
     ];
 
     $form['data']['birthdate'] = [
         '#type' => 'textfield',
         '#required' => TRUE,
-        '#title' => t('Birthdate'),
+        '#title' => t('Data de Nascimento'),
     ];
 
     $form['data']['phone'] = [
         '#type' => 'textfield',
         '#required' => TRUE,
-        '#title' => t('Phone'),
+        '#title' => t('Telefone'),
     ];
 
     $form['data']['gender'] = [
         '#type' => 'select',
         '#required' => TRUE,
-        '#title' => t('Gender'),
+        '#title' => t('Gênero'),
         '#options' => [
-            'male' => t('Male'),
-            'female' => t('Female'),
+            'male' => t('Masculino'),
+            'female' => t('Feminino'),
         ]
     ];
 }
@@ -83,11 +84,11 @@ function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface
 //    array_unshift($form['#validate'], 'syndo_ecommerce_node_product_form_validate');
 //    var_dump($form['actions']['submit']['#submit']);
 //    var_dump($form['#validate']);
+//    var_dump(array_keys($form));    
+
     $form['data'] = [
 
     ];
-
- //   var_dump(array_keys($form));
 
     $form['data']['codigo'] = [
         '#type' => 'textfield',
@@ -107,11 +108,7 @@ function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface
         '#type' => 'select',
         '#required' => TRUE,
         '#title' => t('Categoria'),
-        '#options' => $options /*[
-        	for ($i = 0; $i < count($categorias); $i++) {
-     			 $categorias[$i]["idcategoria"] => $categorias[$i]["nome"]
-    		}
-        ]*/
+        '#options' => $options
     ];    
 
     $form['data']['preco'] = [
@@ -144,19 +141,25 @@ function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface
         '#title' => t('Largura'),
     ];
 
-/*'preco' => $preco,
-        'peso' => $peso,
-        'dimensao_a' => $dimensao_a,
-        'dimensao_c' => $dimensao_c,
-        'dimensao_l' => $dimensao_l,
-        'idempresa' => $idempresa,
-        'imagem_url' => $imagem_url,
-        'campos' => $campos
+    $campos = consultarCampos();
 
-*/
+	foreach ($campos as $campo) {
+		$form['data'][$campo["nome"]] = [
+        	'#type' => 'textfield',
+        	'#required' => FALSE,
+        	'#title' => t($campo["nome"]),
+    	];
+	}
 
 
-    $form['field_idproduto']['#access'] = FALSE;
+	$form['imagem'] = array(
+		'#title' => t('Imagem'),
+		'#type' => 'managed_file',
+		'#upload_location' => 'public://image_example_images/',
+	);    
+	//https://stackoverflow.com/questions/21214526/how-to-add-image-field-in-form-drupal-7?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+
+	$form['field_idproduto']['#access'] = FALSE;
 }
 
 function syndo_ecommerce_user_register_form_validate(&$form, FormStateInterface $form_state) {
@@ -189,15 +192,16 @@ function syndo_ecommerce_user_register_form_submit(&$form, FormStateInterface $f
 function syndo_ecommerce_node_product_form_submit(&$form, FormStateInterface $form_state) {
 //    var_dump($form_state->getValues());
 //	var_dump($form_state->getValue('title')[0]['value']);
-//	var_dump($form_state->getValue('codigo'));
 
 
-	cadastrarProduto($form_state->getValue('codigo'), $form_state->getValue('title')[0]['value'], $form_state->getValue('idcategoria'), $form_state->getValue('preco'), $form_state->getValue('peso'), $form_state->getValue('dimensao_a'), $form_state->getValue('dimensao_c'), $form_state->getValue('dimensao_l'), 'img.jpg', ['idcampo' => 1, 'valor' => 30]);
-
-//dar get value no field_idproduto para ver o formato e dar o set igual
+	$idproduto = cadastrarProduto($form_state->getValue('codigo'), $form_state->getValue('title')[0]['value'], $form_state->getValue('idcategoria'), $form_state->getValue('preco'), $form_state->getValue('peso'), $form_state->getValue('dimensao_a'), $form_state->getValue('dimensao_c'), $form_state->getValue('dimensao_l'), 'img.jpg', ['idcampo' => 1, 'valor' => 30]);
 
 
-//    $form_state->setValue('field_idproduto', 10);
+	$array = array(
+		array("value" => $idproduto),
+	);
+
+	$form_state->setValue('field_idproduto', $array);
 
 
 }
