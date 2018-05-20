@@ -9,6 +9,9 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\syndo_ecommerce\Api\Client\Domain\Model\Client;
 
+
+//include 'libs/cadastrar_produto.php';
+
 /**
  * Implements hook_theme().
  */
@@ -77,11 +80,69 @@ function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface
     array_unshift($form['actions']['submit']['#submit'], 'syndo_ecommerce_user_register_form_submit');
 
     array_unshift($form['#validate'], 'syndo_ecommerce_user_register_form_validate');
-    var_dump($form['actions']['submit']['#submit']);
-    var_dump($form['#validate']);
+//    var_dump($form['actions']['submit']['#submit']);
+//    var_dump($form['#validate']);
     $form['data'] = [
 
     ];
+
+ //   var_dump(array_keys($form));
+
+    $form['data']['codigo'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Codigo Produto'),
+    ];
+
+    $form['data']['categoria'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Categoria'),
+    ];
+
+    $form['data']['preco'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Preço'),
+    ];
+
+    $form['data']['peso'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Peso'),
+    ];
+
+    $form['data']['dimensao_a'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Altura'),
+    ];
+
+    $form['data']['dimensao_c'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Comprimento'),
+    ];    
+
+    $form['data']['dimensao_l'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Largura'),
+    ];
+
+/*'preco' => $preco,
+        'peso' => $peso,
+        'dimensao_a' => $dimensao_a,
+        'dimensao_c' => $dimensao_c,
+        'dimensao_l' => $dimensao_l,
+        'idempresa' => $idempresa,
+        'imagem_url' => $imagem_url,
+        'campos' => $campos
+
+*/
+
+
+    $form['field_idproduto']['#access'] = FALSE;
 }
 
 function syndo_ecommerce_user_register_form_validate(&$form, FormStateInterface $form_state) {
@@ -105,7 +166,18 @@ function syndo_ecommerce_user_register_form_validate(&$form, FormStateInterface 
 }
 
 function syndo_ecommerce_user_register_form_submit(&$form, FormStateInterface $form_state) {
-    var_dump($form_state->getValues());
+//    var_dump($form_state->getValues());
+//    var_dump($form_state->getValue('preco'));
+
+
+//    cadastrarProduto('COD04', 'Meia de Lã Elza Frozen', 300, 10.9, 1.2, 1.0, 3.0, 2.0, 'img.jpg', ['idcampo' => 1, 'valor' => 30]);
+
+
+
+//dar get value no field_idproduto para ver o formato e dar o set igual
+
+
+//    $form_state->setValue('field_idproduto', 10);
 
 
 }
