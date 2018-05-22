@@ -142,14 +142,14 @@ function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface
     ];
 
     $campos = consultarCampos();
-
 	foreach ($campos as $campo) {
-		$form['data'][$campo["nome"]] = [
+		$form['data'][str_replace(' ','', $campo["nome"])] = [
         	'#type' => 'textfield',
         	'#required' => FALSE,
         	'#title' => t($campo["nome"]),
     	];
 	}
+
 
 
 	$form['imagem'] = array(
@@ -191,11 +191,22 @@ function syndo_ecommerce_user_register_form_submit(&$form, FormStateInterface $f
 
 function syndo_ecommerce_node_product_form_submit(&$form, FormStateInterface $form_state) {
 //    var_dump($form_state->getValues());
-//	var_dump($form_state->getValue('title')[0]['value']);
+// 	  var_dump($form_state->getValue('dimensao_c'));
 
 
-	$idproduto = cadastrarProduto($form_state->getValue('codigo'), $form_state->getValue('title')[0]['value'], $form_state->getValue('idcategoria'), $form_state->getValue('preco'), $form_state->getValue('peso'), $form_state->getValue('dimensao_a'), $form_state->getValue('dimensao_c'), $form_state->getValue('dimensao_l'), 'img.jpg', ['idcampo' => 1, 'valor' => 30]);
+	$array_campos = array();
 
+	$campos = consultarCampos();
+
+	foreach ($campos as $campo) {
+		array_push($array_campos, array( 
+			"idcampo" => $campo["idcampo"],
+			"valor" => $form_state->getValue(str_replace(' ','', $campo["nome"])))
+		);		
+	}
+
+
+	$idproduto = cadastrarProduto($form_state->getValue('codigo'), $form_state->getValue('title')[0]['value'], $form_state->getValue('idcategoria'), $form_state->getValue('preco'), $form_state->getValue('peso'), $form_state->getValue('dimensao_a'), $form_state->getValue('dimensao_c'), $form_state->getValue('dimensao_l'), 'img.jpg', $array_campos);
 
 	$array = array(
 		array("value" => $idproduto),
