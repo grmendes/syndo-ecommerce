@@ -163,6 +163,16 @@ function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface
 	$form['field_idproduto']['#access'] = FALSE;
 }
 
+function syndo_ecommerce_form_node_sac_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+//    array_unshift($form['actions']['submit']['#submit'], 'syndo_ecommerce_node_product_form_submit');   
+
+    $form['data'] = [
+
+    ];
+
+
+}
+
 function syndo_ecommerce_form_node_product_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 //    array_unshift($form['actions']['submit']['#submit'], 'syndo_ecommerce_node_product_form_submit');
 
