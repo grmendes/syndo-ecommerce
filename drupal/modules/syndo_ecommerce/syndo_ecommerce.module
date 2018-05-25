@@ -73,6 +73,7 @@ function syndo_ecommerce_form_user_register_form_alter(&$form, FormStateInterfac
 }
 
 function syndo_ecommerce_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
 }
 
 function syndo_ecommerce_entity_type_alter(array &$entity_types) {
@@ -160,6 +161,92 @@ function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface
 	//https://stackoverflow.com/questions/21214526/how-to-add-image-field-in-form-drupal-7?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 
 	$form['field_idproduto']['#access'] = FALSE;
+}
+
+function syndo_ecommerce_form_node_product_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+//    array_unshift($form['actions']['submit']['#submit'], 'syndo_ecommerce_node_product_form_submit');
+
+//    array_unshift($form['#validate'], 'syndo_ecommerce_node_product_form_validate');
+//    var_dump($form['actions']['submit']['#submit']);
+//    var_dump($form['#validate']);
+//    var_dump(array_keys($form));    
+
+	$form['field_idproduto']['#disabled'] = TRUE;
+
+//	$json = visualizarDadosProduto($form_state->getValue('field_idproduto'));
+
+    $form['data'] = [
+
+    ];
+
+    $form['data']['codigo'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Codigo Produto'),
+    ];
+
+    $categorias = consultarCategoria();
+
+	$options = array();
+	foreach ($categorias as $categoria) {
+    	$options[$categoria["idcategoria"]] = $categoria["nome"];
+	}
+
+
+    $form['data']['idcategoria'] = [
+        '#type' => 'select',
+        '#required' => TRUE,
+        '#title' => t('Categoria'),
+        '#options' => $options
+    ];    
+
+    $form['data']['preco'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Preço'),
+    ];
+
+    $form['data']['peso'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Peso'),
+    ];
+
+    $form['data']['dimensao_a'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Altura'),
+    ];
+
+    $form['data']['dimensao_c'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Comprimento'),
+    ];    
+
+    $form['data']['dimensao_l'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Largura'),
+    ];
+
+    $campos = consultarCampos();
+	foreach ($campos as $campo) {
+		$form['data'][str_replace(' ','', $campo["nome"])] = [
+        	'#type' => 'textfield',
+        	'#required' => FALSE,
+        	'#title' => t($campo["nome"]),
+    	];
+	}
+
+
+
+	$form['imagem'] = array(
+		'#title' => t('Imagem'),
+		'#type' => 'managed_file',
+		'#upload_location' => 'public://image_example_images/',
+	);    
+	//https://stackoverflow.com/questions/21214526/how-to-add-image-field-in-form-drupal-7?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 }
 
 function syndo_ecommerce_user_register_form_validate(&$form, FormStateInterface $form_state) {
