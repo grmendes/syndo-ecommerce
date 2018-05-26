@@ -3,8 +3,8 @@
 date_default_timezone_set("America/Sao_Paulo");
 
 //cadastrarTicketCliente('olar', 'eu', 'gnunes');
-//visualizarTicketsCliente('gnunes');
-adicionarMensagem('olar 2', 'eu', 'gnunes', '20180524022425');
+//visualizarTicketsCliente('syndoecommerce');
+//adicionarMensagem('olar 2', 'eu', 'gnunes', '20180524022425');
 
 function cadastrarTicketCliente($msg, $sender, $cliente) {
     

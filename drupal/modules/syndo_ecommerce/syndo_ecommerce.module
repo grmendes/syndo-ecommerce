@@ -13,6 +13,7 @@ use Drupal\syndo_ecommerce\Api\Client\Domain\Model\Client;
 include 'libs/produto.php';
 include 'libs/categoria.php';
 include 'libs/campo.php';
+include 'libs/sac.php';
 
 /**
  * Implements hook_theme().
@@ -164,11 +165,29 @@ function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface
 }
 
 function syndo_ecommerce_form_node_sac_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-//    array_unshift($form['actions']['submit']['#submit'], 'syndo_ecommerce_node_product_form_submit');   
+    array_unshift($form['actions']['submit']['#submit'], 'syndo_ecommerce_node_sac_form_submit');   
 
     $form['data'] = [
 
     ];
+
+
+    $form['data']['remetente'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Remetente'),
+    ];    
+
+
+
+//	$form['body']['#title'] = t('Mensagem');
+//	$form['body']['#required'] = TRUE;
+
+//	$form['title']['#disabled'] = TRUE;
+//	$form['body']['#disabled'] = TRUE;
+
+//	var_dump(array_keys($form));    
+
 
 
 }
@@ -311,5 +330,15 @@ function syndo_ecommerce_node_product_form_submit(&$form, FormStateInterface $fo
 
 	$form_state->setValue('field_idproduto', $array);
 
+}
+
+function syndo_ecommerce_node_sac_form_submit(&$form, FormStateInterface $form_state) {
+
+	$current_user = $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
+	$name = $user->get('name')->value;
+
+	cadastrarTicketCliente($form_state->getValue('body')[0]['value'], $form_state->getValue('remetente'), $name);
 
 }
+
+
