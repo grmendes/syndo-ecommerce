@@ -74,10 +74,11 @@ function syndo_ecommerce_form_user_register_form_alter(&$form, FormStateInterfac
 }
 
 function syndo_ecommerce_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-
+    var_dump(array_keys($form_id));    
 }
 
 function syndo_ecommerce_entity_type_alter(array &$entity_types) {
+    var_dump(array_keys($form_id));    	
 }
 
 function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -336,6 +337,8 @@ function syndo_ecommerce_node_sac_form_submit(&$form, FormStateInterface $form_s
 
 	$current_user = $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
 	$name = $user->get('name')->value;
+
+
 
 	cadastrarTicketCliente($form_state->getValue('body')[0]['value'], $form_state->getValue('remetente'), $name);
 
