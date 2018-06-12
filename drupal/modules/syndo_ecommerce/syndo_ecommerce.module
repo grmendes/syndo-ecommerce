@@ -129,16 +129,9 @@ function _syndo_ecommerce_user_form(&$form, FormStateInterface $form_state) {
         '#options' => [
             'male' => t('Masculino'),
             'female' => t('Feminino'),
-        ]
+        ],
+        '#default_value' => $userData->getSex(),
     ];
-}
-
-function syndo_ecommerce_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-    var_dump(array_keys($form_id));    
-}
-
-function syndo_ecommerce_entity_type_alter(array &$entity_types) {
-    var_dump(array_keys($form_id));    	
 }
 
 function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface $form_state, $form_id) {
