@@ -4,7 +4,7 @@ namespace Drupal\syndo_ecommerce\Api\Client;
 
 interface ClientEndpointInterface
 {
-    const API_HOST = 'https://us-central1-first-try-18f38.cloudfunctions.net';
+    const API_HOST = 'https://gentle-waters-56547.herokuapp.com/';
 
-    const CLIENT_ENDPOINT = '/clientsAPI/register';
+    const CLIENT_ENDPOINT = '/api/client';
 }

@@ -54,11 +54,6 @@ class Client
     protected $birthday;
 
     /**
-     * @var string
-     */
-    protected $address;
-
-    /**
      * Client constructor.
      * @param string $id
      * @param string $name
@@ -69,9 +64,8 @@ class Client
      * @param string $cpf
      * @param string $sex
      * @param string $birthday
-     * @param string $address
      */
-    public function __construct($id, $name, $email, $cep, $phone1, $phone2, $cpf, $sex, $birthday, $address)
+    public function __construct(string $id, string $name, string $email, string $cep, string $phone1, string $phone2, string $cpf, string $sex, string $birthday)
     {
         $this->id = $id;
         $this->name = $name;
@@ -82,9 +76,91 @@ class Client
         $this->cpf = $cpf;
         $this->sex = $sex;
         $this->birthday = $birthday;
-        $this->address = $address;
     }
 
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCep(): string
+    {
+        return $this->cep;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPhone1(): string
+    {
+        return $this->phone1;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPhone2(): string
+    {
+        return $this->phone2;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCpf(): string
+    {
+        return $this->cpf;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSex(): string
+    {
+        return $this->sex;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBirthday(): string
+    {
+        return $this->birthday;
+    }
+
+    /**
+     * @return string
+     */
+    public function id()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @throws GuzzleException
+     */
     public function save()
     {
         $httpClient = new HttpClient([
@@ -95,35 +171,74 @@ class Client
             $body = json_encode([
                 'name' => $this->name,
                 'email' => $this->email,
-                'cep' => $this->cep,
-                'telephone' => $this->phone1,
+                'cep' => str_replace('-', '', $this->cep),
+                'phone1' => $this->phone1,
                 'cpf' => $this->cpf,
-                'gender' => $this->sex,
-                'birthdate' => $this->birthday,
+                'sex' => $this->sex === 'male',
+                'birthday' => stripslashes($this->birthday),
                 'password' => 'senhamestra',
-                'samePass' => 'senhamestra',
-                'address' => $this->address,
             ]);
 
-            error_log($body);
             $response = $httpClient->request(
                 'POST',
                 ClientEndpointInterface::CLIENT_ENDPOINT,
                 [
                     'headers' => [
-                        'api_key' => 'abc',
                         'Content-Type' => 'application/json',
                     ],
                     'body' => $body,
                 ]
             );
 
-            $this->id = $response->getBody()->getContents();
+            $responseData = json_decode($response->getBody()->getContents(), true);
+            $this->id = $responseData['Client ID'];
 
-            error_log($this->id);
         } catch (GuzzleException $e) {
-            drupal_set_message('An error has occurred while connecting to webservice. Please try again');
-            error_log($e->getMessage());
+            throw $e;
         }
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Client
+     *
+     * @throws GuzzleException
+     */
+    public static function getById(string $id)
+    {
+        $httpClient = new HttpClient([
+            'base_uri' => ClientEndpointInterface::API_HOST,
+        ]);
+
+        try {
+
+            $response = $httpClient->request(
+                'GET',
+                ClientEndpointInterface::CLIENT_ENDPOINT,
+                [
+                    'query' => [
+                        'clientid' => $id,
+                    ],
+                ]
+            );
+
+            $responseData = json_decode($response->getBody()->getContents(), true)['data'][0];
+
+        } catch (GuzzleException $e) {
+            throw $e;
+        }
+
+        return new self(
+            $id,
+            $responseData['name'],
+            $responseData['email'],
+            (string) $responseData['cep'],
+            $responseData['phone1'],
+            $responseData['phone2'],
+            $responseData['cpf'],
+            $responseData['sex'] ? 'male' : 'female',
+            $responseData['birthday']
+        );
     }
 }
