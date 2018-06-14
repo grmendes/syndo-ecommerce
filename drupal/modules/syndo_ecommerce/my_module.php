@@ -33,7 +33,7 @@ function syndo_ecommerce_form_user_form_alter(&$form, FormStateInterface $form_s
 
     $form['account']['name']['#access'] = false;
     $form['account']['roles']['#access'] = false;
-    $form['account']['field_idcliente']['#access'] = false;
+    $form['account']['field_idcliente']['#access'] = false; 
 }
 
 function syndo_ecommerce_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -78,8 +78,8 @@ function _syndo_ecommerce_user_form(&$form, FormStateInterface $form_state) {
 
     if (!empty($userId)) {
         $userData = Client::getById($userId);
-        
-    }
+        var_dump($userData);
+    } 
 
     $form['footer']['#access'] = false;
     $form['timezone']['#access'] = false;
@@ -91,35 +91,49 @@ function _syndo_ecommerce_user_form(&$form, FormStateInterface $form_state) {
         '#type' => 'textfield',
         '#required' => TRUE,
         '#title' => t('CPF'),
-        '#default_value' => isset($userData) ? $userData->getCpf() : null,
+        '#default_value' => $userData->getCpf(),
     ];
 
     $form['data']['nome'] = [
         '#type' => 'textfield',
         '#required' => TRUE,
         '#title' => t('Nome Completo'),
-        '#default_value' => isset($userData) ? $userData->getName() : null,
+        '#default_value' => $userData->getName(),
     ];
 
     $form['data']['zipcode'] = [
         '#type' => 'textfield',
         '#required' => TRUE,
         '#title' => t('CEP'),
-        '#default_value' => isset($userData) ? $userData->getCep() : null,
+        '#default_value' => $userData->getCep(),
+    ];
+
+    $form['data']['number'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Número'),
+        '#default_value' => $userData->getNumero(),
+    ];    
+
+    $form['data']['complement'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Complemento'),
+        '#default_value' => $userData->getComplemento(),
     ];
 
     $form['data']['birthdate'] = [
         '#type' => 'textfield',
         '#required' => TRUE,
         '#title' => t('Data de Nascimento'),
-        '#default_value' => isset($userData) ? $userData->getBirthday() : null,
+        '#default_value' => $userData->getBirthday(),
     ];
 
     $form['data']['phone'] = [
         '#type' => 'textfield',
         '#required' => TRUE,
         '#title' => t('Telefone'),
-        '#default_value' => isset($userData) ? $userData->getPhone1() : null,
+        '#default_value' => $userData->getPhone1(),
     ];
 
     $form['data']['gender'] = [
@@ -129,9 +143,13 @@ function _syndo_ecommerce_user_form(&$form, FormStateInterface $form_state) {
         '#options' => [
             'male' => t('Masculino'),
             'female' => t('Feminino'),
-        ],
-        '#default_value' => $userData->getSex(),
+        ]
     ];
+}
+
+
+function syndo_ecommerce_entity_type_alter(array &$entity_types) {
+    //var_dump(array_keys($form_id));    	
 }
 
 function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -154,10 +172,10 @@ function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface
 
     $categorias = consultarCategoria();
 
-    $options = array();
-    foreach ($categorias as $categoria) {
-        $options[$categoria["idcategoria"]] = $categoria["nome"];
-    }
+	$options = array();
+	foreach ($categorias as $categoria) {
+    	$options[$categoria["idcategoria"]] = $categoria["nome"];
+	}
 
 
     $form['data']['idcategoria'] = [
@@ -198,24 +216,24 @@ function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface
     ];
 
     $campos = consultarCampos();
-    foreach ($campos as $campo) {
-        $form['data'][str_replace(' ','', $campo["nome"])] = [
-            '#type' => 'textfield',
-            '#required' => FALSE,
-            '#title' => t($campo["nome"]),
-        ];
-    }
+	foreach ($campos as $campo) {
+		$form['data'][str_replace(' ','', $campo["nome"])] = [
+        	'#type' => 'textfield',
+        	'#required' => FALSE,
+        	'#title' => t($campo["nome"]),
+    	];
+	}
 
 
 
-    $form['imagem'] = array(
-        '#title' => t('Imagem'),
-        '#type' => 'managed_file',
-        '#upload_location' => 'public://image_example_images/',
-    );    
-    //https://stackoverflow.com/questions/21214526/how-to-add-image-field-in-form-drupal-7?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+	$form['imagem'] = array(
+		'#title' => t('Imagem'),
+		'#type' => 'managed_file',
+		'#upload_location' => 'public://image_example_images/',
+	);    
+	//https://stackoverflow.com/questions/21214526/how-to-add-image-field-in-form-drupal-7?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 
-    $form['field_idproduto']['#access'] = FALSE;
+	$form['field_idproduto']['#access'] = FALSE;
 }
 
 function syndo_ecommerce_form_node_sac_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -262,9 +280,9 @@ function syndo_ecommerce_form_node_product_edit_form_alter(&$form, FormStateInte
 //    var_dump($form['#validate']);
 //    var_dump(array_keys($form));    
 
-    $form['field_idproduto']['#disabled'] = TRUE;
+	$form['field_idproduto']['#disabled'] = TRUE;
 
-//  $json = visualizarDadosProduto($form_state->getValue('field_idproduto'));
+//	$json = visualizarDadosProduto($form_state->getValue('field_idproduto'));
 
     $form['data'] = [
 
@@ -278,10 +296,10 @@ function syndo_ecommerce_form_node_product_edit_form_alter(&$form, FormStateInte
 
     $categorias = consultarCategoria();
 
-    $options = array();
-    foreach ($categorias as $categoria) {
-        $options[$categoria["idcategoria"]] = $categoria["nome"];
-    }
+	$options = array();
+	foreach ($categorias as $categoria) {
+    	$options[$categoria["idcategoria"]] = $categoria["nome"];
+	}
 
 
     $form['data']['idcategoria'] = [
@@ -322,22 +340,22 @@ function syndo_ecommerce_form_node_product_edit_form_alter(&$form, FormStateInte
     ];
 
     $campos = consultarCampos();
-    foreach ($campos as $campo) {
-        $form['data'][str_replace(' ','', $campo["nome"])] = [
-            '#type' => 'textfield',
-            '#required' => FALSE,
-            '#title' => t($campo["nome"]),
-        ];
-    }
+	foreach ($campos as $campo) {
+		$form['data'][str_replace(' ','', $campo["nome"])] = [
+        	'#type' => 'textfield',
+        	'#required' => FALSE,
+        	'#title' => t($campo["nome"]),
+    	];
+	}
 
 
 
-    $form['imagem'] = array(
-        '#title' => t('Imagem'),
-        '#type' => 'managed_file',
-        '#upload_location' => 'public://image_example_images/',
-    );
-    //https://stackoverflow.com/questions/21214526/how-to-add-image-field-in-form-drupal-7?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+	$form['imagem'] = array(
+		'#title' => t('Imagem'),
+		'#type' => 'managed_file',
+		'#upload_location' => 'public://image_example_images/',
+	);
+	//https://stackoverflow.com/questions/21214526/how-to-add-image-field-in-form-drupal-7?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 }
 
 function syndo_ecommerce_user_register_form_submit(&$form, FormStateInterface $form_state) {
@@ -349,39 +367,39 @@ function syndo_ecommerce_user_register_form_submit(&$form, FormStateInterface $f
 
 function syndo_ecommerce_node_product_form_submit(&$form, FormStateInterface $form_state) {
 //    var_dump($form_state->getValues());
-//    var_dump($form_state->getValue('dimensao_c'));
+// 	  var_dump($form_state->getValue('dimensao_c'));
 
 
-    $array_campos = array();
+	$array_campos = array();
 
-    $campos = consultarCampos();
+	$campos = consultarCampos();
 
-    foreach ($campos as $campo) {
-        array_push($array_campos, array( 
-            "idcampo" => $campo["idcampo"],
-            "valor" => $form_state->getValue(str_replace(' ','', $campo["nome"])))
-        );      
-    }
+	foreach ($campos as $campo) {
+		array_push($array_campos, array( 
+			"idcampo" => $campo["idcampo"],
+			"valor" => $form_state->getValue(str_replace(' ','', $campo["nome"])))
+		);		
+	}
 
 
-    $idproduto = cadastrarProduto($form_state->getValue('codigo'), $form_state->getValue('title')[0]['value'], $form_state->getValue('idcategoria'), $form_state->getValue('preco'), $form_state->getValue('peso'), $form_state->getValue('dimensao_a'), $form_state->getValue('dimensao_c'), $form_state->getValue('dimensao_l'), 'img.jpg', $array_campos);
+	$idproduto = cadastrarProduto($form_state->getValue('codigo'), $form_state->getValue('title')[0]['value'], $form_state->getValue('idcategoria'), $form_state->getValue('preco'), $form_state->getValue('peso'), $form_state->getValue('dimensao_a'), $form_state->getValue('dimensao_c'), $form_state->getValue('dimensao_l'), 'img.jpg', $array_campos);
 
-    $array = array(
-        array("value" => $idproduto),
-    );
+	$array = array(
+		array("value" => $idproduto),
+	);
 
-    $form_state->setValue('field_idproduto', $array);
+	$form_state->setValue('field_idproduto', $array);
 
 }
 
 function syndo_ecommerce_node_sac_form_submit(&$form, FormStateInterface $form_state) {
 
-    $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
-    $name = $user->get('name')->value;
+	$user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
+	$name = $user->get('name')->value;
 
 
 
-    $ticket = cadastrarTicketCliente($form_state->getValue('body')[0]['value'], $form_state->getValue('remetente'), $name);
+	$ticket = cadastrarTicketCliente($form_state->getValue('body')[0]['value'], $form_state->getValue('remetente'), $name);
 
     if (($form_state->getValue('response') != NULL) || ($form_state->getValue('replyer') != NULL)) {
         adicionarMensagem($form_state->getValue('response'), $form_state->getValue('replyer'), $name, $ticket['systemMessage']);
