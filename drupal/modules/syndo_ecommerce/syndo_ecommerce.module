@@ -33,7 +33,7 @@ function syndo_ecommerce_form_user_form_alter(&$form, FormStateInterface $form_s
 
     $form['account']['name']['#access'] = false;
     $form['account']['roles']['#access'] = false;
-    $form['account']['field_idcliente']['#access'] = false;
+    $form['account']['field_idcliente']['#access'] = false; 
 }
 
 function syndo_ecommerce_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -79,7 +79,7 @@ function _syndo_ecommerce_user_form(&$form, FormStateInterface $form_state) {
     if (!empty($userId)) {
         $userData = Client::getById($userId);
         var_dump($userData);
-    }
+    } 
 
     $form['footer']['#access'] = false;
     $form['timezone']['#access'] = false;
@@ -108,6 +108,20 @@ function _syndo_ecommerce_user_form(&$form, FormStateInterface $form_state) {
         '#default_value' => $userData->getCep(),
     ];
 
+    $form['data']['number'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Número'),
+        '#default_value' => $userData->getNumero(),
+    ];    
+
+    $form['data']['complement'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Complemento'),
+        '#default_value' => $userData->getComplemento(),
+    ];
+
     $form['data']['birthdate'] = [
         '#type' => 'textfield',
         '#required' => TRUE,
@@ -133,12 +147,9 @@ function _syndo_ecommerce_user_form(&$form, FormStateInterface $form_state) {
     ];
 }
 
-function syndo_ecommerce_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-    var_dump(array_keys($form_id));    
-}
 
 function syndo_ecommerce_entity_type_alter(array &$entity_types) {
-    var_dump(array_keys($form_id));    	
+    //var_dump(array_keys($form_id));    	
 }
 
 function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -228,6 +239,9 @@ function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface
 function syndo_ecommerce_form_node_sac_form_alter(&$form, FormStateInterface $form_state, $form_id) {
     array_unshift($form['actions']['submit']['#submit'], 'syndo_ecommerce_node_sac_form_submit');   
 
+    $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
+    $name = $user->get('name')->value;
+
     $form['data'] = [
 
     ];
@@ -239,17 +253,22 @@ function syndo_ecommerce_form_node_sac_form_alter(&$form, FormStateInterface $fo
         '#title' => t('Remetente'),
     ];    
 
+    $form['data']['replyer'] = [
+        '#type' => 'textfield',
+        '#required' => FALSE,
+        '#title' => t('Respondido por'),
+    ];    
 
+    $form['data']['response'] = [
+        '#type' => 'textfield',
+        '#required' => FALSE,
+        '#title' => t('Resposta'),
+    ];       
 
-//	$form['body']['#title'] = t('Mensagem');
-//	$form['body']['#required'] = TRUE;
-
-//	$form['title']['#disabled'] = TRUE;
-//	$form['body']['#disabled'] = TRUE;
-
-//	var_dump(array_keys($form));    
-
-
+    if ($name != 'syndoecommerce') {
+        $form['data']['replyer']['#access'] = FALSE;    
+        $form['data']['response']['#access'] = FALSE;   
+    }
 
 }
 
@@ -375,12 +394,16 @@ function syndo_ecommerce_node_product_form_submit(&$form, FormStateInterface $fo
 
 function syndo_ecommerce_node_sac_form_submit(&$form, FormStateInterface $form_state) {
 
-	$current_user = $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
+	$user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
 	$name = $user->get('name')->value;
 
 
 
-	cadastrarTicketCliente($form_state->getValue('body')[0]['value'], $form_state->getValue('remetente'), $name);
+	$ticket = cadastrarTicketCliente($form_state->getValue('body')[0]['value'], $form_state->getValue('remetente'), $name);
+
+    if (($form_state->getValue('response') != NULL) || ($form_state->getValue('replyer') != NULL)) {
+        adicionarMensagem($form_state->getValue('response'), $form_state->getValue('replyer'), $name, $ticket['systemMessage']);
+    }
 
 }
 

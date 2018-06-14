@@ -3,8 +3,8 @@
 date_default_timezone_set("America/Sao_Paulo");
 
 //cadastrarTicketCliente('olar', 'eu', 'gnunes');
-//visualizarTicketsCliente('syndoecommerce');
-//adicionarMensagem('olar 2', 'eu', 'gnunes', '20180524022425');
+visualizarTicketsCliente('syndoecommerce');
+//adicionarMensagem('olar22222222', 'eu', 'syndoecommerce', '20180613032805');
 
 function cadastrarTicketCliente($msg, $sender, $cliente) {
     
@@ -63,31 +63,32 @@ function visualizarTicketsCliente($cliente) {
     // Print the date from the response
     $jsonRet = json_decode($resp, true);
 
-    var_dump($jsonRet);
+//    var_dump($jsonRet);
 
     return $jsonRet;
 }
 
 
 function adicionarMensagem($msg, $sender, $cliente, $ticket) {
-    
+
     $postData = array(
         'timestamp' => date('Y-m-d') . 'T' . date('H:i'),
         'sender' => $sender,
         'message' => $msg,
-    );
+    );    
 
     // Setup cURL
-    $ch = curl_init('https://centralatendimento-mc857.azurewebsites.net/tickets/c1f33357c6f9b3b559037f838c3501ae4eedb09e/' . $cliente . '/id/' . $ticket);
+    $ch = curl_init('https://centralatendimento-mc857.azurewebsites.net/tickets/c1f33357c6f9b3b559037f838c3501ae4eedb09e/' . $cliente . '/ticket/' . $ticket);
 
     $json = json_encode($postData);
 
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
         'Content-Type: application/json')
     );
+
 
     // Send the request
     $response = curl_exec($ch);
@@ -100,7 +101,7 @@ function adicionarMensagem($msg, $sender, $cliente, $ticket) {
     // Print the date from the response
     $jsonRet = json_decode($response, true);
 
-    var_dump($jsonRet);
+//    var_dump($jsonRet);
 
     return $jsonRet; 
 
