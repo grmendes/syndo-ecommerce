@@ -27,7 +27,7 @@ class SearchForm extends FormBase {
         );
         $form['category'] = array(
             '#type' => 'select',
-            '#options' => array_merge(['' => '{Selecione}'], $valoresCategorias),
+            '#options' => (['' => '{Selecione}'] + $valoresCategorias),
             '#title' => t('Categoria:'),
             '#required' => FALSE,
         );
