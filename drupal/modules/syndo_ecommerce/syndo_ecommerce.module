@@ -357,17 +357,17 @@ function syndo_ecommerce_node_product_form_submit(&$form, FormStateInterface $fo
     $campos = consultarCampos();
 
     foreach ($campos as $campo) {
-        array_push($array_campos, array( 
+        array_push($array_campos, array(
             "idcampo" => $campo["idcampo"],
             "valor" => $form_state->getValue(str_replace(' ','', $campo["nome"])))
-        );      
+        );
     }
 
 
     $idproduto = cadastrarProduto($form_state->getValue('codigo'), $form_state->getValue('title')[0]['value'], $form_state->getValue('idcategoria'), $form_state->getValue('preco'), $form_state->getValue('peso'), $form_state->getValue('dimensao_a'), $form_state->getValue('dimensao_c'), $form_state->getValue('dimensao_l'), 'img.jpg', $array_campos);
 
     $array = array(
-        array("value" => $idproduto),
+        array("value" => $form_state->getValue('codigo')),
     );
 
     $form_state->setValue('field_idproduto', $array);

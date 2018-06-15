@@ -1,0 +1,7 @@
+syndo_ecommerce.list_products:
+  path: '/products'
+  defaults:
+    _controller: '\Drupal\syndo_ecommerce\Controller\ProductController::listProducts'
+    _title: 'Produtos'
+  requirements:
+    _permission: 'access content'
