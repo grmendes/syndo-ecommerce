@@ -130,7 +130,7 @@ function _syndo_ecommerce_user_form(&$form, FormStateInterface $form_state) {
             'male' => t('Masculino'),
             'female' => t('Feminino'),
         ],
-        '#default_value' => $userData->getSex(),
+        '#default_value' => isset($userData) ? $userData->getSex() : null,
     ];
 }
 
