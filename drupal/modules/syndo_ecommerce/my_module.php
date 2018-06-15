@@ -78,7 +78,7 @@ function _syndo_ecommerce_user_form(&$form, FormStateInterface $form_state) {
 
     if (!empty($userId)) {
         $userData = Client::getById($userId);
-        var_dump($userData);
+       // var_dump($userData);
     } 
 
     $form['footer']['#access'] = false;

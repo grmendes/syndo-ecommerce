@@ -39,7 +39,7 @@ function pagamentoBoleto($name, $cpf, $address, $cep, $value) {
     // Print the date from the response
     $jsonRet = json_decode($response, true);
 
-    var_dump($jsonRet);
+    // var_dump($jsonRet);
 
     return $jsonRet; 
 }
@@ -72,7 +72,7 @@ function situacaoBoleto($code) {
     // Print the date from the response
     $jsonRet = json_decode($resp, true);
 
-    var_dump($jsonRet);
+    // var_dump($jsonRet);
 
     return $jsonRet;
 }
@@ -108,7 +108,7 @@ function registrarCartao($card_number, $credit) {
     // Print the date from the response
     $jsonRet = json_decode($response, true);
 
-    var_dump($jsonRet);
+    // var_dump($jsonRet);
 
     return $jsonRet; 
 }
@@ -154,7 +154,7 @@ function pagamentoCartao($name, $cpf, $card_number, $month, $year, $security_cod
     // Print the date from the response
     $jsonRet = json_decode($response, true);
 
-    var_dump($jsonRet);
+    // var_dump($jsonRet);
 
     return $jsonRet; 
 }
