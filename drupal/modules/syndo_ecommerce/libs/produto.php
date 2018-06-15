@@ -3,6 +3,9 @@
 //cadastrarProduto('CODVAZ', 'Meia de Lã Elza Frozen', 300, 10.9, 1.2, '', '', '', 'img.jpg', ['idcampo' => 100, 'valor' => 30]);
 //visualizarDadosProduto(132);
 
+use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\Exception\GuzzleException;
+
 function cadastrarProduto($codigo, $nome, $idcategoria, $preco, $peso, $dimensao_a, $dimensao_c, $dimensao_l, $imagem_url, $campos) {
 
     $idempresa = 1024;
@@ -82,4 +85,64 @@ function visualizarDadosProduto($codigo) {
     $key = array_search($codigo, array_column($jsonRet, 'idproduto'));
 
     return $jsonRet[$key];
+}
+
+/**
+ * @param $codigos
+ * @param string $nome
+ *
+ * @return array|
+ *
+ * @throws GuzzleException
+ */
+function listarProdutos($codigos, $nome = '', $categoria = '') {
+    $httpClient = new HttpClient([
+        'base_uri' => 'http://produtos.vitainformatica.com/api/',
+    ]);
+
+    try {
+
+        $response = $httpClient->request(
+            'GET',
+            'produto',
+            [
+                'headers' => [
+                    'Authorization' => 'Bearer 90ddc7c5634095af7f087ed450ab4962b9f06dde9064e5ecb96bd0c3493af4bd',
+                ],
+                'query' => [
+                    'idempresa' => 1024,
+                    'idcategoria' => $categoria,
+                    'codigo' => implode(',', $codigos),
+                ],
+            ]
+        );
+
+        $responseData = json_decode($response->getBody()->getContents(), true);
+
+        foreach ($responseData as $produto) {
+            if (empty($nome) || false !== stripos($produto['nome'], $nome)) {
+                if (empty($categoria) || $produto['idcategoria'] == $categoria) {
+                    yield getProductFields($produto, array_search($produto['codigo'], $codigos));
+                }
+            }
+        }
+
+    } catch (GuzzleException $e) {
+        throw $e;
+    }
+}
+
+function getProductFields($produto, $nid) {
+    error_log($nid);
+    return [
+        'codigo' => $produto['codigo'],
+        'nome' => \Drupal\Core\Link::createFromRoute(
+            $produto['nome'],
+            'entity.node.canonical',
+            [
+                'node' => $nid,
+            ]
+        )->toString(),
+        'preco' => 'R$' . number_format($produto['preco'], 2, ',', '.'),
+    ];
 }
