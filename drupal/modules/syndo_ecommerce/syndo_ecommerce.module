@@ -8,6 +8,8 @@
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\syndo_ecommerce\Api\Client\Domain\Model\Client;
+use Drupal\file\Entity\File;
+
 
 
 include 'libs/produto.php';
@@ -334,6 +336,7 @@ function syndo_ecommerce_form_node_product_edit_form_alter(&$form, FormStateInte
 
     $form['imagem'] = array(
         '#title' => t('Imagem'),
+        '#name' => 'imagem',
         '#type' => 'managed_file',
         '#upload_location' => 'public://image_example_images/',
     );
@@ -364,7 +367,18 @@ function syndo_ecommerce_node_product_form_submit(&$form, FormStateInterface $fo
     }
 
 
-    $idproduto = cadastrarProduto($form_state->getValue('codigo'), $form_state->getValue('title')[0]['value'], $form_state->getValue('idcategoria'), $form_state->getValue('preco'), $form_state->getValue('peso'), $form_state->getValue('dimensao_a'), $form_state->getValue('dimensao_c'), $form_state->getValue('dimensao_l'), 'img.jpg', $array_campos);
+    $formfile = $form_state->getValue('imagem');
+
+    if ($formfile) {
+        $oNewFile = File::load(reset($formfile));
+        $oNewFile->setPermanent();
+    }
+
+
+    $image_local = 'http://localhost:8080/sites/default/files/image_example_images/' . $oNewFile->getFilename();
+
+
+    $idproduto = cadastrarProduto($form_state->getValue('codigo'), $form_state->getValue('title')[0]['value'], $form_state->getValue('idcategoria'), $form_state->getValue('preco'), $form_state->getValue('peso'), $form_state->getValue('dimensao_a'), $form_state->getValue('dimensao_c'), $form_state->getValue('dimensao_l'), $image_local, $array_campos);
 
     $array = array(
         array("value" => $form_state->getValue('codigo')),
