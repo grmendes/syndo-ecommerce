@@ -63,7 +63,7 @@ function visualizarTicketsCliente($cliente) {
     // Print the date from the response
     $jsonRet = json_decode($resp, true);
 
-//    var_dump($jsonRet);
+    var_dump($jsonRet);
 
     return $jsonRet;
 }
@@ -106,5 +106,3 @@ function adicionarMensagem($msg, $sender, $cliente, $ticket) {
     return $jsonRet; 
 
 }
-
-

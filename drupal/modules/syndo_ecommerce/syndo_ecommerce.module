@@ -230,6 +230,7 @@ function syndo_ecommerce_form_node_sac_form_alter(&$form, FormStateInterface $fo
 
     ];
 
+    $form['field_id']['#access'] = FALSE;
 
     $form['data']['remetente'] = [
         '#type' => 'textfield',
@@ -343,6 +344,46 @@ function syndo_ecommerce_form_node_product_edit_form_alter(&$form, FormStateInte
     //https://stackoverflow.com/questions/21214526/how-to-add-image-field-in-form-drupal-7?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 }
 
+
+function syndo_ecommerce_form_node_sac_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+    array_unshift($form['actions']['submit']['#submit'], 'syndo_ecommerce_node_sac_edit_form_submit');   
+
+    $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
+    $name = $user->get('name')->value;
+
+    $form['field_id']['#access'] = FALSE;
+
+    $form['data'] = [
+
+    ];
+
+
+    $form['data']['remetente'] = [
+        '#type' => 'textfield',
+        '#required' => TRUE,
+        '#title' => t('Remetente'),
+        '#default_value' => 'Cliente 1',
+    ];    
+
+    $form['data']['replyer'] = [
+        '#type' => 'textfield',
+        '#required' => FALSE,
+        '#title' => t('Respondido por'),
+    ];    
+
+    $form['data']['response'] = [
+        '#type' => 'textfield',
+        '#required' => FALSE,
+        '#title' => t('Resposta'),
+    ];       
+
+    if ($name != 'syndoecommerce') {
+        $form['data']['replyer']['#access'] = FALSE;    
+        $form['data']['response']['#access'] = FALSE;   
+    }
+
+}
+
 function syndo_ecommerce_user_register_form_submit(&$form, FormStateInterface $form_state) {
 //    var_dump($form_state->getValues());
 //    var_dump($form_state->getValue('preco'));
@@ -397,8 +438,27 @@ function syndo_ecommerce_node_sac_form_submit(&$form, FormStateInterface $form_s
 
     $ticket = cadastrarTicketCliente($form_state->getValue('body')[0]['value'], $form_state->getValue('remetente'), $name);
 
+    $array = array(
+        array("value" => $ticket['systemMessage']),
+    );
+
+    $form_state->setValue('field_id', $array);
+
     if (($form_state->getValue('response') != NULL) || ($form_state->getValue('replyer') != NULL)) {
         adicionarMensagem($form_state->getValue('response'), $form_state->getValue('replyer'), $name, $ticket['systemMessage']);
+    }
+
+}
+
+function syndo_ecommerce_node_sac_edit_form_submit(&$form, FormStateInterface $form_state) {
+
+    $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
+    $name = $user->get('name')->value;
+
+
+    if (($form_state->getValue('response') != NULL) || ($form_state->getValue('replyer') != NULL)) {
+        adicionarMensagem($form_state->getValue('response'), $form_state->getValue('replyer'), $name, 
+            $form_state->getValue('field_id')[0]['value']);
     }
 
 }
