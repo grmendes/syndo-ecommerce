@@ -5,3 +5,10 @@ syndo_ecommerce.list_products:
     _title: 'Produtos'
   requirements:
     _permission: 'access content'
+syndo_ecommerce.order_history:
+  path: '/order_history'
+  defaults:
+    _controller: '\Drupal\syndo_ecommerce\Controller\OrderController::history'
+    _title: 'Histórico de Pedidos'
+  requirements:
+    _permission: 'access content'
