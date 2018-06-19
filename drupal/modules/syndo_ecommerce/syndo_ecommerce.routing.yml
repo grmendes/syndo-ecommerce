@@ -12,3 +12,10 @@ syndo_ecommerce.order_history:
     _title: 'Histórico de Pedidos'
   requirements:
     _permission: 'access content'
+syndo_ecommerce.view_cart:
+  path: '/cart'
+  defaults:
+    _controller: '\Drupal\syndo_ecommerce\Controller\CartController::view'
+    _title: 'Carrinho'
+  requirements:
+    _permission: 'access content'
