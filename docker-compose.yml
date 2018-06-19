@@ -7,10 +7,10 @@ services:
     ports: 
       - "8080:80"
     volumes:
-      - ./drupal/modules:/var/www/html/modules
-      - ./drupal/profiles:/var/www/html/profiles
-      - ./drupal/themes:/var/www/html/themes
-      - ./drupal/sites:/var/www/html/sites
+      - ./drupal/modules:/var/www/html/modules:Z
+      - ./drupal/profiles:/var/www/html/profiles:Z
+      - ./drupal/themes:/var/www/html/themes:Z
+      - ./drupal/sites:/var/www/html/sites:Z
     restart: always
 
   mysql:
@@ -19,7 +19,7 @@ services:
     ports: 
       - "3306:3306"
     volumes:
-      - ./dump.sql:/docker-entrypoint-initdb.d/dump.sql
+      - ./dump.sql:/docker-entrypoint-initdb.d/dump.sql:z
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: syndoecommercedb
