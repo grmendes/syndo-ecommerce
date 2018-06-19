@@ -7,7 +7,7 @@ visualizarTicketsCliente('syndoecommerce');
 //adicionarMensagem('olar22222222', 'eu', 'syndoecommerce', '20180613032805');
 
 function cadastrarTicketCliente($msg, $sender, $cliente) {
-    
+
     $postData = array(
         'timestamp' => date('Y-m-d') . 'T' . date('H:i'),
         'sender' => $sender,
@@ -37,7 +37,7 @@ function cadastrarTicketCliente($msg, $sender, $cliente) {
     // Print the date from the response
     $jsonRet = json_decode($response, true);
 
-    return $jsonRet; 
+    return $jsonRet;
 
 }
 
@@ -55,7 +55,7 @@ function visualizarTicketsCliente($cliente) {
     // Send the request & save response to $resp
     $resp = curl_exec($curl);
     // Close request to clear up some resources
-    curl_close($curl);    
+    curl_close($curl);
 
 
     // Send the request
@@ -63,7 +63,7 @@ function visualizarTicketsCliente($cliente) {
     // Print the date from the response
     $jsonRet = json_decode($resp, true);
 
-    var_dump($jsonRet);
+    //var_dump($jsonRet);
 
     return $jsonRet;
 }
@@ -75,7 +75,7 @@ function adicionarMensagem($msg, $sender, $cliente, $ticket) {
         'timestamp' => date('Y-m-d') . 'T' . date('H:i'),
         'sender' => $sender,
         'message' => $msg,
-    );    
+    );
 
     // Setup cURL
     $ch = curl_init('https://centralatendimento-mc857.azurewebsites.net/tickets/c1f33357c6f9b3b559037f838c3501ae4eedb09e/' . $cliente . '/ticket/' . $ticket);
@@ -103,6 +103,6 @@ function adicionarMensagem($msg, $sender, $cliente, $ticket) {
 
 //    var_dump($jsonRet);
 
-    return $jsonRet; 
+    return $jsonRet;
 
 }
