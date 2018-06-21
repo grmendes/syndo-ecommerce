@@ -18,19 +18,40 @@ class OrderController {
     Drupal::service('page_cache_kill_switch')->trigger();
     $usuario = Drupal::currentUser();
 
-    $result = Drupal::entityQuery('node')
+    $nids = Drupal::entityQuery('node')
       ->condition('status', 1)
       ->condition('type', 'order')
       ->condition('uid', $usuario->id())
       ->execute();
     
-    var_dump($result);
-    die();
-
-    $nids = array_keys($result['node']);
+    //var_dump($nids);
+    /*highlight_string("<?php\n\$data =\n" . var_export($result, true) . ";\n?>");*/
+    //die();
 
     $nodes = node_load_multiple($nids);
+
+    foreach ($nodes as $node) {
+      $datapedido = $node->get('field_datapedido')->getValue();
+      $idpagamento = $node->get('field_idpagamento')->getValue();
+      $idpedido = $node->get('field_idpedido')->getValue();
+      $idrastreio = $node->get('field_idrastreio')->getValue();
+      
+      $listidproduto = $node->get('field_listidproduto')->getValue();
+
+      $meiopagamento = $node->get('field_meiopagamento')->getValue();
+      if ($meiopagamento == "boleto") {
+        $idstatus = $node->get('field_idstatus')->getValue();
+        $situacaopagamento = situacaoBoleto($idstatus);
+      } else {
+        $situacaopagamento = "Aprovado";
+      }
+    }
+    
     $output = node_view_multiple($nodes);
+
+    //var_dump($output);
+    /*highlight_string("<?php\n\$data =\n" . var_export($output, true) . ";\n?>");*/
+    //die();
 
 
 
