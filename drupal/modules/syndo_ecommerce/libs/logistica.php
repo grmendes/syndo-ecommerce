@@ -33,3 +33,34 @@ function calcularFrete($tipoEntrega, $cepOrigem, $cepDestino, $peso, $tipoPacote
 
     return $jsonRet['preco'];
 }
+
+function rastreiaPedido($codigoRastreio) {
+    // Get cURL resource
+    $curl = curl_init();
+    // Set some options - we are passing in a useragent too here
+    curl_setopt_array($curl, array(
+        CURLOPT_RETURNTRANSFER => 1,
+        CURLOPT_URL => 'https://hidden-basin-50728.herokuapp.com/rastrearentrega/cod_rastreio=' . $codigoRastreio . '?apiKey=tmvcglg' ,
+        CURLOPT_USERAGENT => 'Codular Sample cURL Request'
+    ));
+
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+        'Content-Type: application/json',
+        'x-api-key: tmvcglg')
+    );
+
+    // Send the request & save response to $resp
+    $resp = curl_exec($curl);
+    // Close request to clear up some resources
+    curl_close($curl);    
+
+
+    // Send the request
+
+    // Print the date from the response
+    $jsonRet = json_decode($resp, true);
+
+//    var_dump($jsonRet['preco']);
+
+    return $jsonRet;
+}
