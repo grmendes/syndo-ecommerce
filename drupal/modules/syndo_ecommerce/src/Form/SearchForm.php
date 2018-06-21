@@ -10,7 +10,7 @@ class SearchForm extends FormBase {
      * {@inheritdoc}
      */
     public function getFormId() {
-        return 'deliver_form';
+        return 'search_form';
     }
     /**
      * {@inheritdoc}
