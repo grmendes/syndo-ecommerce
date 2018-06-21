@@ -23,7 +23,16 @@ class DeliveryForm extends FormBase {
       '#type' => 'textfield',
       '#title' => t('CEP:'),
       '#required' => TRUE,
-    );
+    );    
+    $form['data']['entrega'] = [
+        '#type' => 'select',
+        '#required' => TRUE,
+        '#title' => t('Tipo da Entrega'),
+        '#options' => [
+            'pac' => t('PAC'),
+            'sedex' => t('Sedex'),
+        ],
+    ];    
     $form['actions']['#type'] = 'actions';
     $form['actions']['submit'] = array(
       '#type' => 'submit',
