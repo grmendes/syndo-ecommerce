@@ -29,8 +29,8 @@ class DeliveryForm extends FormBase {
         '#required' => TRUE,
         '#title' => t('Tipo da Entrega'),
         '#options' => [
-            'pac' => t('PAC'),
-            'sedex' => t('Sedex'),
+            'PAC' => t('PAC'),
+            'SEDEX' => t('SEDEX'),
         ],
     ];    
     $form['actions']['#type'] = 'actions';
@@ -53,10 +53,13 @@ class DeliveryForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $cep = $form_state->getValue('zipcode');
+    $entrega = $form_state->getValue('entrega');
+
+    $frete = calcularFrete($entrega, 13083872, $cep, 1000, 'Caixa', 10, 10, 10);
+
     /*
      * @TODO: Chamar api com o CEP passado.
     */
-    $frete = 10.0;
 
     $form_state->set('frete', $frete);
     $form_state->setRebuild();
