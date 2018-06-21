@@ -14,6 +14,7 @@ include 'libs/produto.php';
 include 'libs/categoria.php';
 include 'libs/campo.php';
 include 'libs/sac.php';
+include 'libs/logistica.php';
 
 /**
  * Implements hook_theme().
