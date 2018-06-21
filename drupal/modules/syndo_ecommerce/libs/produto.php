@@ -1,13 +1,9 @@
 <?php
 
-//cadastrarProduto('CODVAZ', 'Meia de Lã Elza Frozen', 300, 10.9, 1.2, '', '', '', 'img.jpg', ['idcampo' => 100, 'valor' => 30]);
-//visualizarDadosProduto(132);
-
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\GuzzleException;
 
 function cadastrarProduto($codigo, $nome, $idcategoria, $preco, $peso, $dimensao_a, $dimensao_c, $dimensao_l, $imagem_url, $campos) {
-
     $idempresa = 1024;
 
     $postData = array(
@@ -50,8 +46,7 @@ function cadastrarProduto($codigo, $nome, $idcategoria, $preco, $peso, $dimensao
 
 //    echo $response;
 
-    return $jsonRet["id"]; 
-
+    return $jsonRet["id"];
 }
 
 function visualizarDadosProduto($codigo) {

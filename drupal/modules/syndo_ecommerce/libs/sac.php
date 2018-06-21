@@ -3,7 +3,7 @@
 date_default_timezone_set("America/Sao_Paulo");
 
 //cadastrarTicketCliente('olar', 'eu', 'gnunes');
-visualizarTicketsCliente('syndoecommerce');
+//visualizarTicketsCliente('syndoecommerce');
 //adicionarMensagem('olar22222222', 'eu', 'syndoecommerce', '20180613032805');
 
 function cadastrarTicketCliente($msg, $sender, $cliente) {
@@ -62,8 +62,6 @@ function visualizarTicketsCliente($cliente) {
 
     // Print the date from the response
     $jsonRet = json_decode($resp, true);
-
-    //var_dump($jsonRet);
 
     return $jsonRet;
 }

@@ -43,8 +43,5 @@ function cadastrarUsuario($nome, $email, $senha) {
 	// Print the date from the response
 	$jsonRet = json_decode($response);
 
-	var_dump(json_decode($response));
-
-
 	//echo $jsonRet;
 }

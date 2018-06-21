@@ -33,7 +33,6 @@ function syndo_ecommerce_theme($existing, $type, $theme, $path) {
 function syndo_ecommerce_form_user_form_alter(&$form, FormStateInterface $form_state, $form_id) {
     _syndo_ecommerce_user_form($form, $form_state);
 
-//    $form['account']['name']['#access'] = false;
     $form['account']['roles']['#access'] = false;
     $form['account']['field_idcliente']['#access'] = false;
 }
@@ -80,7 +79,6 @@ function _syndo_ecommerce_user_form(&$form, FormStateInterface $form_state) {
 
     if (!empty($userId)) {
         $userData = Client::getById($userId);
-        
     }
 
     $form['footer']['#access'] = false;
@@ -139,11 +137,6 @@ function _syndo_ecommerce_user_form(&$form, FormStateInterface $form_state) {
 function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface $form_state, $form_id) {
     array_unshift($form['actions']['submit']['#submit'], 'syndo_ecommerce_node_product_form_submit');
 
-//    array_unshift($form['#validate'], 'syndo_ecommerce_node_product_form_validate');
-//    var_dump($form['actions']['submit']['#submit']);
-//    var_dump($form['#validate']);
-//    var_dump(array_keys($form));    
-
     $form['data'] = [
 
     ];
@@ -160,7 +153,6 @@ function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface
     foreach ($categorias as $categoria) {
         $options[$categoria["idcategoria"]] = $categoria["nome"];
     }
-
 
     $form['data']['idcategoria'] = [
         '#type' => 'select',
@@ -208,20 +200,18 @@ function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface
         ];
     }
 
-
-
     $form['imagem'] = array(
         '#title' => t('Imagem'),
         '#type' => 'managed_file',
         '#upload_location' => 'public://image_example_images/',
-    );    
+    );
     //https://stackoverflow.com/questions/21214526/how-to-add-image-field-in-form-drupal-7?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 
     $form['field_idproduto']['#access'] = FALSE;
 }
 
 function syndo_ecommerce_form_node_sac_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-    array_unshift($form['actions']['submit']['#submit'], 'syndo_ecommerce_node_sac_form_submit');   
+    array_unshift($form['actions']['submit']['#submit'], 'syndo_ecommerce_node_sac_form_submit');
 
     $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
     $name = $user->get('name')->value;
@@ -236,38 +226,28 @@ function syndo_ecommerce_form_node_sac_form_alter(&$form, FormStateInterface $fo
         '#type' => 'textfield',
         '#required' => TRUE,
         '#title' => t('Remetente'),
-    ];    
+    ];
 
     $form['data']['replyer'] = [
         '#type' => 'textfield',
         '#required' => FALSE,
         '#title' => t('Respondido por'),
-    ];    
+    ];
 
     $form['data']['response'] = [
         '#type' => 'textfield',
         '#required' => FALSE,
         '#title' => t('Resposta'),
-    ];       
+    ];
 
     if ($name != 'syndoecommerce') {
-        $form['data']['replyer']['#access'] = FALSE;    
-        $form['data']['response']['#access'] = FALSE;   
+        $form['data']['replyer']['#access'] = FALSE;
+        $form['data']['response']['#access'] = FALSE;
     }
-
 }
 
 function syndo_ecommerce_form_node_product_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-//    array_unshift($form['actions']['submit']['#submit'], 'syndo_ecommerce_node_product_form_submit');
-
-//    array_unshift($form['#validate'], 'syndo_ecommerce_node_product_form_validate');
-//    var_dump($form['actions']['submit']['#submit']);
-//    var_dump($form['#validate']);
-//    var_dump(array_keys($form));    
-
     $form['field_idproduto']['#disabled'] = TRUE;
-
-//  $json = visualizarDadosProduto($form_state->getValue('field_idproduto'));
 
     $form['data'] = [
 
@@ -286,13 +266,12 @@ function syndo_ecommerce_form_node_product_edit_form_alter(&$form, FormStateInte
         $options[$categoria["idcategoria"]] = $categoria["nome"];
     }
 
-
     $form['data']['idcategoria'] = [
         '#type' => 'select',
         '#required' => TRUE,
         '#title' => t('Categoria'),
         '#options' => $options
-    ];    
+    ];
 
     $form['data']['preco'] = [
         '#type' => 'textfield',
@@ -316,7 +295,7 @@ function syndo_ecommerce_form_node_product_edit_form_alter(&$form, FormStateInte
         '#type' => 'textfield',
         '#required' => TRUE,
         '#title' => t('Comprimento'),
-    ];    
+    ];
 
     $form['data']['dimensao_l'] = [
         '#type' => 'textfield',
@@ -332,8 +311,6 @@ function syndo_ecommerce_form_node_product_edit_form_alter(&$form, FormStateInte
             '#title' => t($campo["nome"]),
         ];
     }
-
-
 
     $form['imagem'] = array(
         '#title' => t('Imagem'),
@@ -346,7 +323,7 @@ function syndo_ecommerce_form_node_product_edit_form_alter(&$form, FormStateInte
 
 
 function syndo_ecommerce_form_node_sac_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-    array_unshift($form['actions']['submit']['#submit'], 'syndo_ecommerce_node_sac_edit_form_submit');   
+    array_unshift($form['actions']['submit']['#submit'], 'syndo_ecommerce_node_sac_edit_form_submit');
 
     $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
     $name = $user->get('name')->value;
@@ -357,45 +334,36 @@ function syndo_ecommerce_form_node_sac_edit_form_alter(&$form, FormStateInterfac
 
     ];
 
-
     $form['data']['remetente'] = [
         '#type' => 'textfield',
         '#required' => TRUE,
         '#title' => t('Remetente'),
         '#default_value' => 'Cliente 1',
-    ];    
+    ];
 
     $form['data']['replyer'] = [
         '#type' => 'textfield',
         '#required' => FALSE,
         '#title' => t('Respondido por'),
-    ];    
+    ];
 
     $form['data']['response'] = [
         '#type' => 'textfield',
         '#required' => FALSE,
         '#title' => t('Resposta'),
-    ];       
+    ];
 
     if ($name != 'syndoecommerce') {
-        $form['data']['replyer']['#access'] = FALSE;    
-        $form['data']['response']['#access'] = FALSE;   
+        $form['data']['replyer']['#access'] = FALSE;
+        $form['data']['response']['#access'] = FALSE;
     }
-
 }
 
 function syndo_ecommerce_user_register_form_submit(&$form, FormStateInterface $form_state) {
-//    var_dump($form_state->getValues());
-//    var_dump($form_state->getValue('preco'));
-
 }
 
 
 function syndo_ecommerce_node_product_form_submit(&$form, FormStateInterface $form_state) {
-//    var_dump($form_state->getValues());
-//    var_dump($form_state->getValue('dimensao_c'));
-
-
     $array_campos = array();
 
     $campos = consultarCampos();
@@ -406,7 +374,6 @@ function syndo_ecommerce_node_product_form_submit(&$form, FormStateInterface $fo
             "valor" => $form_state->getValue(str_replace(' ','', $campo["nome"])))
         );
     }
-
 
     $formfile = $form_state->getValue('imagem');
 
@@ -426,15 +393,12 @@ function syndo_ecommerce_node_product_form_submit(&$form, FormStateInterface $fo
     );
 
     $form_state->setValue('field_idproduto', $array);
-
 }
 
 function syndo_ecommerce_node_sac_form_submit(&$form, FormStateInterface $form_state) {
 
     $user = \Drupal\user\Entity\User::load(\Drupal::currentUser()->id());
     $name = $user->get('name')->value;
-
-
 
     $ticket = cadastrarTicketCliente($form_state->getValue('body')[0]['value'], $form_state->getValue('remetente'), $name);
 
@@ -457,7 +421,7 @@ function syndo_ecommerce_node_sac_edit_form_submit(&$form, FormStateInterface $f
 
 
     if (($form_state->getValue('response') != NULL) || ($form_state->getValue('replyer') != NULL)) {
-        adicionarMensagem($form_state->getValue('response'), $form_state->getValue('replyer'), $name, 
+        adicionarMensagem($form_state->getValue('response'), $form_state->getValue('replyer'), $name,
             $form_state->getValue('field_id')[0]['value']);
     }
 
