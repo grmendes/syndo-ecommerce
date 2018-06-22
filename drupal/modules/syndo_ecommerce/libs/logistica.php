@@ -140,5 +140,5 @@ function calcularTodasOpcoesFrete($cepOrigem, $cepDestino, $peso, $tipoPacote, $
     // Print the date from the response
     $jsonRet = json_decode($resp, true);
 
-    return $jsonRet['preco'];
+    return $jsonRet;
 }

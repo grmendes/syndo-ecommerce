@@ -55,24 +55,33 @@ class CartDeliveryForm extends FormBase {
     $cep = $form_state->getValue('zipcode');
     $entrega = $form_state->getValue('entrega');
     $cart_items = $form_state->getBuildInfo()['args'][0];
-    $resultadoFrete = array('preco' => 0, 'prazo'=> 0);
-    /*highlight_string("<?php\n\$data =\n" . var_export($form_state->getBuildInfo()['args'], true) . ";\n?>");
-    die();*/
+      
+    $precoPac = 0;
+    $prazoPac = 0;
+    $precoSedex = 0;
+    $prazoSedex = 0;
     foreach ($cart_items as $key => $value) {
       $dadosProduto = visualizarDadosProduto($key);
-      $frete = calcularFrete($entrega, "13083-872", $cep, 1000, 'Caixa', 10, 10, 10);
+      $fretes = calcularTodasOpcoesFrete("13083-872", $cep, 1000, 'Caixa', 10, 10, 10);
       foreach ($fretes as $tipoEntrega => $dadosFrete) {
-          $resultadoFretes[$tipoEntrega]["preco"] += intval($dadosFrete[$tipoEntrega]["preco"]) * $value["quantidade"];
-          if(intval($resultadoFretes[$tipoEntrega]["prazo"]) > $dadosFrete[$tipoEntrega]["prazo"]) {
-              $dadosFrete[$tipoEntrega]["prazo"] = intval($resultadoFretes[$tipoEntrega]["prazo"]);
+        if ($tipoEntrega == 'pac') {
+          $precoPac += intval($dadosFrete["preco"]) * intval($value["qtd"]);
+          if($prazoPac < intval($dadosFrete["prazo"])) {
+            $prazoPac = intval($dadosFrete["prazo"]);
           }
+        }
+        if ($tipoEntrega == 'sedex') {
+          $precoSedex += intval($dadosFrete["preco"]) * intval($value["qtd"]);
+          if($prazoSedex < intval($dadosFrete["prazo"])) {
+            $prazoSedex = intval($dadosFrete["prazo"]);
+          }
+        }
       }
     }
+      
+    $resultadoFretes = array('pac' => array('preco' => $precoPac, 'prazo' => $prazoPac), 'sedex' => array('preco' => $precoSedex, 'prazo' => $prazoSedex));
 
-
-
-
-    $form_state->set('frete', $frete);
+    $form_state->set('frete', $resultadoFretes[$tipoEntrega]);
     $form_state->setRebuild();
   }
 }
