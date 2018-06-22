@@ -30,22 +30,42 @@ class OrderController {
 
     $nodes = node_load_multiple($nids);
 
+    $out = array();
     foreach ($nodes as $node) {
       $datapedido = $node->get('field_datapedido')->getValue();
-      $idpagamento = $node->get('field_idpagamento')->getValue();
+      $idstatus = $node->get('field_idstatus')->getValue();
       $idpedido = $node->get('field_idpedido')->getValue();
+
       $idrastreio = $node->get('field_idrastreio')->getValue();
+      $situacaoEntrega = rastreiaPedido($idrastreio);
       
       $listidproduto = $node->get('field_listidproduto')->getValue();
+      $produtos = array();
+      foreach($listidproduto as $idproduto) {
+        array_push($produtos, visualizarDadosProduto($idproduto));
+      }
+
+      $situacaopagamento = "Aprovado";
 
       $meiopagamento = $node->get('field_meiopagamento')->getValue();
       if ($meiopagamento == "boleto") {
-        $idstatus = $node->get('field_idstatus')->getValue();
-        $situacaopagamento = situacaoBoleto($idstatus);
-      } else {
-        $situacaopagamento = "Aprovado";
+        $idpagamento = $node->get('field_idpagamento')->getValue();
+        $situacaopagamento = situacaoBoleto($idpagamento);
       }
+
+      $array = array($datapedido, $idstatus, $idpedido, $situacaoEntrega, $situacaopagamento, $produtos);
+
+      array_push($out, $array);
     }
+
+    $output = [
+      '#type' => 'page',
+      'content' => [
+        'system_main' => [],
+        
+      ]
+
+    ];
     
     $output = node_view_multiple($nodes);
 
