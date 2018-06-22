@@ -1,8 +1,8 @@
 <?php
 
 //calcularFrete('SEDEX', 13065051, 13348863, 100, 'caixa', 2, 3, 4);
-rastreiaPedido('53a40010-75d9-11e8-945c-275b53f7cbce');
-//cadastrarEntrega(62345, 'PAC', '13348863', '13348863', 1000, 'Caixa', 10, 10, 10); 
+// rastreiaPedido('53a40010-75d9-11e8-945c-275b53f7cbce');
+//cadastrarEntrega(62345, 'PAC', '13348863', '13348863', 1000, 'Caixa', 10, 10, 10);
 
 function calcularFrete($tipoEntrega, $cepOrigem, $cepDestino, $peso, $tipoPacote, $comprimento, $altura, $largura) {
 
@@ -23,7 +23,7 @@ function calcularFrete($tipoEntrega, $cepOrigem, $cepDestino, $peso, $tipoPacote
     // Send the request & save response to $resp
     $resp = curl_exec($curl);
     // Close request to clear up some resources
-    curl_close($curl);    
+    curl_close($curl);
 
 
     // Send the request
@@ -54,7 +54,7 @@ function rastreiaPedido($codigoRastreio) {
     // Send the request & save response to $resp
     $resp = curl_exec($curl);
     // Close request to clear up some resources
-    curl_close($curl);    
+    curl_close($curl);
 
 
     // Send the request
@@ -62,13 +62,13 @@ function rastreiaPedido($codigoRastreio) {
     // Print the date from the response
     $jsonRet = json_decode($resp, true);
 
-    var_dump($resp);
+    // var_dump($resp);
 
     return $jsonRet;
 }
 
 function cadastrarEntrega($idProduto, $tipoEntrega, $cepOrigem, $cepDestino, $peso, $tipoPacote, $altura, $largura, $comprimento) {
-    
+
     $postData = array(
         'idProduto' => $idProduto,
         'tipoEntrega' => $tipoEntrega,
@@ -108,5 +108,5 @@ function cadastrarEntrega($idProduto, $tipoEntrega, $cepOrigem, $cepDestino, $pe
 
     var_dump($response);
 
-    return $jsonRet; 
+    return $jsonRet;
 }
