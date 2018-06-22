@@ -20,6 +20,9 @@ class SearchForm extends FormBase {
 
         $valoresCategorias = array_combine(array_column($categorias, 'idcategoria'), array_column($categorias, 'nome'));
 
+        $form['#attributes'] = [
+            'style' => 'display: flex; justify-content: space-evenly',
+        ];
         $form['name'] = array(
             '#type' => 'textfield',
             '#title' => t('Nome:'),

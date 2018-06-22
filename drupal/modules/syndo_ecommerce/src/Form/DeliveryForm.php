@@ -41,9 +41,9 @@ class DeliveryForm extends FormBase {
     );
 
     if ($form_state->has('frete')) {
-      $frete = $form_state->get('frete');
+      $frete = number_format($form_state->get('frete'), 2);
       $form['valor_calculado'] = array(
-        '#markup' => "<p>Valor: $frete</p>",
+        '#markup' => "<p>Valor: R$ $frete</p>",
       );
     }
     return $form;

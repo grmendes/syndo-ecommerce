@@ -56,7 +56,7 @@ function visualizarDadosProduto($codigo) {
     // Set some options - we are passing in a useragent too here
     curl_setopt_array($curl, array(
         CURLOPT_RETURNTRANSFER => 1,
-        CURLOPT_URL => 'http://produtos.vitainformatica.com/api/produto?idempresa=1024',
+        CURLOPT_URL => 'http://produtos.vitainformatica.com/api/produto?idempresa=1024&codigo='.$codigo,
         CURLOPT_USERAGENT => 'Codular Sample cURL Request'
     ));
 
@@ -77,9 +77,7 @@ function visualizarDadosProduto($codigo) {
     // Print the date from the response
     $jsonRet = json_decode($resp, true);
 
-    $key = array_search($codigo, array_column($jsonRet, 'idproduto'));
-
-    return $jsonRet[$key];
+    return $jsonRet[0];
 }
 
 /**

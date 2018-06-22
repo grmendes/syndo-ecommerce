@@ -5,7 +5,9 @@
  * Contains syndo_ecommerce.module
  */
 
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\Plugin\DataType\EntityAdapter;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\syndo_ecommerce\Api\Client\Domain\Model\Client;
@@ -425,7 +427,53 @@ function syndo_ecommerce_node_sac_form_submit(&$form, FormStateInterface $form_s
     if (($form_state->getValue('response') != NULL) || ($form_state->getValue('replyer') != NULL)) {
         adicionarMensagem($form_state->getValue('response'), $form_state->getValue('replyer'), $name, $ticket['systemMessage']);
     }
+}
 
+function syndo_ecommerce_node_view_alter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display) {
+    Drupal::service('page_cache_kill_switch')->trigger();
+    if ($entity->getEntityType()->id() == 'node') {
+        $node = $entity->getTypedData();
+
+        ($node instanceof EntityAdapter);
+        $codProduto = $node->get('field_idproduto')->getValue()[0]['value'];
+
+        $dados = visualizarDadosProduto($codProduto);
+
+        $image_url = !empty($dados['imagem_url']) ? Url::fromUserInput($dados['imagem_url'])->toString() : '';
+
+        $build['dados'] = [
+            '#type' => 'container',
+            'imagem' => [
+                '#children' => "<img style=\"width:50%;float:left;\" src=\"$image_url\"/>",
+            ],
+            'preco' => [
+                '#markup' => '<h2>R$' . $dados['preco'] . '</h2>',
+            ],
+            'descricao' => [
+                '#markup' => '<p>' . $dados['descricao'] . '</p>',
+            ],
+        ];
+
+        $build['dados']['info']['titulo'] = [
+            '#children' => '<h2 style="clear:both;">Informações do Produto</h2>'
+        ];
+
+        $info = array_map(function ($campo) {
+            if (empty($campo['valor'])) {
+                return null;
+            }
+
+            return [
+                $campo['nome'],
+                $campo['valor'] . ' ' . $campo['unidade'],
+            ];
+        }, $dados['campos']);
+        $build['dados']['info']['tabela'] = [
+            '#type' => 'table',
+            '#empty' => 'Dados do produto indisponíveis.',
+            '#rows' => array_filter($info)
+        ];
+    }
 }
 
 function syndo_ecommerce_node_sac_edit_form_submit(&$form, FormStateInterface $form_state) {
