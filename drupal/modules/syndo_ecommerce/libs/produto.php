@@ -126,10 +126,9 @@ function listarProdutos($codigos, $nome = '', $categoria = '') {
 }
 
 function getProductFields($produto, $nid) {
-    error_log($nid);
     return [
         'codigo' => $produto['codigo'],
-        'nome' => \Drupal\Core\Link::createFromRoute(
+        'nome' => empty($nid) ? $produto['nome'] : \Drupal\Core\Link::createFromRoute(
             $produto['nome'],
             'entity.node.canonical',
             [

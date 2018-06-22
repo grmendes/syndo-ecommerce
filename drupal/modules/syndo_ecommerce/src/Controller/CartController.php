@@ -57,19 +57,35 @@ class CartController extends ControllerBase
             $this->sessionManager->start();
         }
 
-        $cart_items = $this->userPrivateTempstore->get('cart_items') ?? [];
+        $cart_items = array_filter($this->userPrivateTempstore->get('cart_items') ?? []);
+
+        $productsCodes = array_keys($cart_items);
+
+        $productsInfo = listarProdutos($productsCodes);
+
+        $cart_info = [];
+        foreach ($productsInfo as $product) {
+            $precoUn = floatval(str_replace('R$', '' , $product['preco']));
+            $qtd = intval($cart_items[$product['codigo']]);
+            $cart_info[] = [
+                $product['nome'],
+                $qtd,
+                'R$' . number_format($precoUn, 2, ',', '.'),
+                'R$' . number_format($precoUn * $qtd, 2, ',', '.'),
+            ];
+        }
 
         $frete_form = Drupal::formBuilder()->getForm('Drupal\syndo_ecommerce\Form\CartDeliveryForm', $cart_items);
 
-        $checkout_form = Drupal::formBuilder()->getForm('Drupal\syndo_ecommerce\Form\CheckoutForm');
-        // var_dump($cart_items);die();
+        $checkout_form = Drupal::formBuilder()->getForm('Drupal\syndo_ecommerce\Form\CheckoutForm', $cart_items);
+
         $element = array(
             '#type' => 'container',
             'lista' => [
                 '#type' => 'table',
-                '#header' => ['Produto', 'Quantidade'],
+                '#header' => ['Produto', 'Quantidade', 'Preço/Un.', 'Valor'],
                 //'#header' => ['Quantidade'],
-                '#rows' => array_map(null, array_keys($cart_items), $cart_items),
+                '#rows' => $cart_info,
             ],
             'frete' => $frete_form,
             'checkout' => [
