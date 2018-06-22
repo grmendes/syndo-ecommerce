@@ -86,7 +86,7 @@ class AddToCartForm extends FormBase {
         $productId = $form_state->getBuildInfo()['args'][0];
         $qtyInCart = $cart[$productId] ?? 0;
 
-        $cart[$productId] = $qtyInCart + (int) $form_state->getValue('quantity', 0);
+        $cart[$productId] = $qtyInCart + (int) $form_state->getValue('quantity', 0) + 1;
         try {
             $this->userPrivateTempstore->set('cart_items', $cart);
         } catch (TempStoreException $e) {
