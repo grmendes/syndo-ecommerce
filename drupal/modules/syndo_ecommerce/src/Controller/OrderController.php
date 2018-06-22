@@ -67,8 +67,8 @@ class OrderController {
             'Identificador',
             'Situação da Entrega',
             'Situação do Pagamento',
-            'Produtos'
-        ]
+            'Produtos',
+        ],
         '#rows' => $out,
         '#empty' => 'Nenhum pedido foi feito até o momento!',
     ];
