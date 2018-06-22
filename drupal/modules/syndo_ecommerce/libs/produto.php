@@ -3,7 +3,7 @@
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\GuzzleException;
 
-function cadastrarProduto($codigo, $nome, $idcategoria, $preco, $peso, $dimensao_a, $dimensao_c, $dimensao_l, $imagem_url, $campos) {
+function cadastrarProduto($codigo, $nome, $idcategoria, $preco, $peso, $dimensao_a, $dimensao_c, $dimensao_l, $imagem_url, $campos, $descricao) {
     $idempresa = 1024;
 
     $postData = array(
@@ -17,11 +17,9 @@ function cadastrarProduto($codigo, $nome, $idcategoria, $preco, $peso, $dimensao
         'dimensao_l' => $dimensao_l,
         'idempresa' => $idempresa,
         'imagem_url' => $imagem_url,
-        'campos' => $campos
+        'campos' => $campos,
+        'descricao' => $descricao,
     );
-
-    var_dump($postData); die;
-
     // Setup cURL
     $ch = curl_init('http://produtos.vitainformatica.com/api/produto?idempresa=1024');
 
@@ -46,7 +44,7 @@ function cadastrarProduto($codigo, $nome, $idcategoria, $preco, $peso, $dimensao
     // Print the date from the response
     $jsonRet = json_decode($response, true);
 
-//    echo $response;
+    error_log(print_r($jsonRet, true));
 
     return $jsonRet["id"];
 }
