@@ -378,13 +378,16 @@ function syndo_ecommerce_node_product_form_submit(&$form, FormStateInterface $fo
 
     $formfile = $form_state->getValue('imagem');
 
+    $image_local = NULL;
+
     if ($formfile) {
         $oNewFile = File::load(reset($formfile));
         $oNewFile->setPermanent();
+        $image_local = 'http://localhost:8080/sites/default/files/image_example_images/' . $oNewFile->getFilename();
     }
 
 
-    $image_local = 'http://localhost:8080/sites/default/files/image_example_images/' . $oNewFile->getFilename();
+    
 
 
     $idproduto = cadastrarProduto($form_state->getValue('codigo'), $form_state->getValue('title')[0]['value'], $form_state->getValue('idcategoria'), $form_state->getValue('preco'), $form_state->getValue('peso'), $form_state->getValue('dimensao_a'), $form_state->getValue('dimensao_c'), $form_state->getValue('dimensao_l'), $image_local, $array_campos);

@@ -2,7 +2,7 @@
 
 //calcularFrete('SEDEX', 13065051, 13348863, 100, 'caixa', 2, 3, 4);
 //rastreiaPedido();
-cadastrarEntrega(1, 'PAC', 13065051, 13348863, 100, 'Caixa', 1, 1, 1); 
+//cadastrarEntrega(1, 'PAC', 13065051, 13348863, 100, 'Caixa', 1, 1, 1); 
 
 function calcularFrete($tipoEntrega, $cepOrigem, $cepDestino, $peso, $tipoPacote, $comprimento, $altura, $largura) {
 
@@ -79,7 +79,7 @@ function cadastrarEntrega($idProduto, $tipoEntrega, $cepOrigem, $cepDestino, $pe
         'altura' => $altura,
         'largura' => $largura,
         'comprimento' => $comprimento,
-        'apiKey' => '17b8e5f4-5fb6-593c-bf02-cdf57eab0c69',
+        'apiKey' => 'ahahuahuahuahua',
     );
 
     // Setup cURL
