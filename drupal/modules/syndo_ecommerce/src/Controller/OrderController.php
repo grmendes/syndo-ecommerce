@@ -2,6 +2,7 @@
 namespace Drupal\syndo_ecommerce\Controller;
 
 use Drupal;
+use Drupal\node\Entity\Node;
 
 /**
  * Provides route responses for the Example module.
@@ -28,7 +29,7 @@ class OrderController {
     /*highlight_string("<?php\n\$data =\n" . var_export($result, true) . ";\n?>");*/
     //die();
 
-    $nodes = node_load_multiple($nids);
+    $nodes = Node::loadMultiple($nids);
 
     $out = array();
     foreach ($nodes as $node) {
@@ -59,43 +60,18 @@ class OrderController {
     }
 
     $output = [
-      '#type' => 'page',
-      'content' => [
-        'system_main' => [],
-        
-      ]
-
+        '#type' => 'table',
+        '#hearders' => [
+            'Data do Pedido',
+            'Status',
+            'Identificador',
+            'Situação da Entrega',
+            'Situação do Pagamento',
+            'Produtos',
+        ],
+        '#rows' => $out,
+        '#empty' => 'Nenhum pedido foi feito até o momento!',
     ];
-    
-    $output = node_view_multiple($nodes);
-
-    //var_dump($output);
-    /*highlight_string("<?php\n\$data =\n" . var_export($output, true) . ";\n?>");*/
-    //die();
-
-
-
-//    $query = Drupal::database()->query('SELECT n.nid, field_idproduto_value FROM node__field_idproduto nf JOIN node n ON n.vid = nf.revision_id');
-//    $codigos = $query->fetchAllKeyed();
-//
-//    $produtos = listarProdutos($codigos, $nome, $categoria);
-//
-//    $filters = Drupal::formBuilder()->getForm('Drupal\syndo_ecommerce\Form\SearchForm');
-//
-//    $filters['name']['#default_value'] = $nome;
-//    $filters['name']['#value'] = $nome;
-//    $filters['category']['#default_value'] = $categoria;
-//    $filters['category']['#value'] = $categoria;
-//
-//    $element = array(
-//        '#type' => 'container',
-//        'filtro' => $filters,
-//        'lista' => [
-//            '#type' => 'table',
-//            '#header' => ['Código', 'Nome do Produto', 'Preço'],
-//            '#rows' => iterator_to_array($produtos),
-//        ],
-//    );
 
     return $output;
   }
