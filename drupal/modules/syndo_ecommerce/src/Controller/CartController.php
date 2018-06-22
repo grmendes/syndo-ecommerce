@@ -59,6 +59,8 @@ class CartController extends ControllerBase
 
         $cart_items = $this->userPrivateTempstore->get('cart_items') ?? [];
 
+        $erasecart_form = Drupal::formBuilder()->getForm('Drupal\syndo_ecommerce\Form\EraseCart');
+
         $frete_form = Drupal::formBuilder()->getForm('Drupal\syndo_ecommerce\Form\CartDeliveryForm', $cart_items);
 
         $checkout_form = Drupal::formBuilder()->getForm('Drupal\syndo_ecommerce\Form\CheckoutForm');
@@ -71,11 +73,12 @@ class CartController extends ControllerBase
                 //'#header' => ['Quantidade'],
                 '#rows' => array_map(null, array_keys($cart_items), $cart_items),
             ],
+            'erase' => $erasecart_form,
             'frete' => $frete_form,
             'checkout' => [
                 '#markup' => '<h1>Finalizar Compra</h1>',
                 'form' => $checkout_form,
-            ],
+            ],            
         );
 
 

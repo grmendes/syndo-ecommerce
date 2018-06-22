@@ -195,8 +195,11 @@ class CheckoutForm extends FormBase {
 
         }
 
+        $this->userPrivateTempstore->delete('cart_items');
 
         \Drupal::messenger()->addMessage('Compra efetuada com sucesso!');
+
+
 
     }
 }
