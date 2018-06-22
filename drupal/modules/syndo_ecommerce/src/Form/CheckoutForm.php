@@ -115,27 +115,22 @@ class CheckoutForm extends FormBase {
                 'cardholder' => [
                     '#type' => 'textfield',
                     '#title' => 'Nome do titular do Cartão',
-                    '#required' => true,
                 ],
                 'number' => [
                     '#type' => 'textfield',
                     '#title' => 'Número do Cartão',
-                    '#required' => true,
                 ],
                 'year' => [
                     '#type' => 'textfield',
                     '#title' => 'Ano Validade',
-                    '#required' => true,
                 ],
                 'month' => [
                     '#type' => 'textfield',
                     '#title' => 'Mes Validade',
-                    '#required' => true,
                 ],
                 'ccv' => [
                     '#type' => 'textfield',
                     '#title' => 'CCV',
-                    '#required' => true,
                 ],
             ],
             'bankTicket' => [
@@ -148,17 +143,14 @@ class CheckoutForm extends FormBase {
                 'fullName' => [
                     '#type' => 'textfield',
                     '#title' => 'Nome do Completo',
-                    '#required' => true,
                 ],
                 'billing_address' => [
                     '#type' => 'textfield',
                     '#title' => 'Endereço de Cobrança',
-                    '#required' => true,
                 ],
                 'billing_zipcode' => [
                     '#type' => 'textfield',
                     '#title' => 'CEP',
-                    '#required' => true,
                 ],
             ],
         );
@@ -172,28 +164,24 @@ class CheckoutForm extends FormBase {
 
         return $form;
     }
+
     /**
      * {@inheritdoc}
      */
     public function submitForm(array &$form, FormStateInterface $form_state) {
+        $cart = $this->userPrivateTempstore->get('cart_items') ?? [];
+        $mode = $form_state->getValue('mode');
 
-        if ($form_state->getValue('billing_address') != NULL) {
-            
-
-            pagamentoBoleto($form_state->getValue('fullName'), $form_state->getValue('cpf'), 
-            $form_state->getValue('billing_address'), $form_state->getValue('cep'), 30.0);
+        switch ($mode) {
+            case 'creditCard':
+                $this->processCreditCardPurchase($form_state, $cart);
+                break;
+            case 'bankTicket':
+                $this->processBankTicketPurchase($form_state, $cart);
+                break;
         }
 
-
-        if ($form_state->getValue('number') != NULL) {
-
-            registrarCartao($form_state->getValue('number'), true);
-
-            pagamentoCartao($form_state->getValue('cardholder'), $form_state->getValue('cpf'), 
-                $form_state->getValue('number'), $form_state->getValue('month'), $form_state->getValue('year'), 
-                $form_state->getValue('ccv'), 20.90, 4);
-
-        }
+        $this->registraEntrega($form_state, $cart);
 
         $this->userPrivateTempstore->delete('cart_items');
 
@@ -201,5 +189,37 @@ class CheckoutForm extends FormBase {
 
 
 
+    }
+
+    protected function processCreditCardPurchase(FormStateInterface $form_state, array $cart_items) {
+        $total = 0;
+        foreach($cart_items as $item) {
+            $total += $item[3];
+        }
+
+        registrarCartao($form_state->getValue('number'), true);
+
+        pagamentoCartao($form_state->getValue('cardholder'), $form_state->getValue('cpf'),
+            $form_state->getValue('number'), $form_state->getValue('month'), $form_state->getValue('year'),
+            $form_state->getValue('ccv'), 20.90, 4);
+    }
+
+    protected function processBankTicketPurchase(FormStateInterface $form_state, array $cart_items) {
+        $total = 0;
+        foreach($cart_items as $item) {
+            $total += $item[3];
+        }
+
+        pagamentoBoleto(
+            $form_state->getValue('fullName'),
+            $form_state->getValue('cpf'),
+            $form_state->getValue('billing_address'),
+            $form_state->getValue('cep'),
+            $total
+        );
+    }
+
+    protected function registraEntrega($form_state, $cart)
+    {
     }
 }

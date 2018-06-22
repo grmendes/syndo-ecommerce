@@ -61,7 +61,7 @@ class AddToCartForm extends FormBase {
             '#type' => 'select',
             '#title' => t('Quantidade:'),
             '#required' => true,
-            '#options' => range(1, 5),
+            '#options' => array_combine(range(1, 5), range(1, 5)),
         );
 
         $form['actions']['#type'] = 'actions';
@@ -87,7 +87,7 @@ class AddToCartForm extends FormBase {
         $productId = $form_state->getBuildInfo()['args'][0];
         $qtyInCart = $cart[$productId] ?? 0;
 
-        $cart[$productId] = $qtyInCart + (int) $form_state->getValue('quantity', 0) + 1;
+        $cart[$productId] = $qtyInCart + (int) $form_state->getValue('quantity', 0);
         // var_dump($cart);
         try {
             $this->userPrivateTempstore->set('cart_items', $cart);

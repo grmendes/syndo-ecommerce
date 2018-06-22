@@ -61,33 +61,49 @@ class CartController extends ControllerBase
 
         $productsCodes = array_keys($cart_items);
 
-        $productsInfo = listarProdutos($productsCodes);
-
+        $cart_view = [];
         $cart_info = [];
-        foreach ($productsInfo as $product) {
-            $precoUn = floatval(str_replace('R$', '' , $product['preco']));
-            $qtd = intval($cart_items[$product['codigo']]);
-            $cart_info[] = [
-                $product['nome'],
-                $qtd,
-                'R$' . number_format($precoUn, 2, ',', '.'),
-                'R$' . number_format($precoUn * $qtd, 2, ',', '.'),
-            ];
+        $total = 0;
+        if (!empty($productsCodes)) {
+            $productsInfo = listarProdutos($productsCodes, '', '', true);
+            foreach ($productsInfo as $product) {
+                $precoUn = floatval(str_replace('R$', '' , $product['preco']));
+                $qtd = intval($cart_items[$product['codigo']]);
+
+                $cart_info[] = [
+                    $product['nome'],
+                    $qtd,
+                    $precoUn,
+                    $precoUn * $qtd,
+                    [$product['dimensao_a'] ?? 1,$product['dimensao_l'] ?? 1,$product['dimensao_c'] ?? 1],
+                    $product['peso'] ?? 0.1,
+                ];
+                $total += $precoUn * $qtd;
+
+                $cart_view[] = [
+                    $product['nome'],
+                    $qtd,
+                    'R$' . number_format($precoUn, 2, ',', '.'),
+                    'R$' . number_format($precoUn * $qtd, 2, ',', '.'),
+                ];
+            }
         }
 
         $erasecart_form = Drupal::formBuilder()->getForm('Drupal\syndo_ecommerce\Form\EraseCart');
 
         $frete_form = Drupal::formBuilder()->getForm('Drupal\syndo_ecommerce\Form\CartDeliveryForm', $cart_items);
 
-        $checkout_form = Drupal::formBuilder()->getForm('Drupal\syndo_ecommerce\Form\CheckoutForm', $cart_items);
+        $checkout_form = Drupal::formBuilder()->getForm('Drupal\syndo_ecommerce\Form\CheckoutForm', $cart_info);
 
         $element = array(
             '#type' => 'container',
             'lista' => [
                 '#type' => 'table',
                 '#header' => ['Produto', 'Quantidade', 'Preço/Un.', 'Valor'],
-                //'#header' => ['Quantidade'],
-                '#rows' => $cart_info,
+                '#rows' => $cart_view,
+            ],
+            'total' => [
+                '#children' => '<h2> Valor total: R$' . number_format($total, 2, ',', '.') . '</h2>',
             ],
             'erase' => $erasecart_form,
             'frete' => $frete_form,

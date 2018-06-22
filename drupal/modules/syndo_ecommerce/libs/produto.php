@@ -88,7 +88,7 @@ function visualizarDadosProduto($codigo) {
  *
  * @throws GuzzleException
  */
-function listarProdutos($codigos, $nome = '', $categoria = '') {
+function listarProdutos($codigos, $nome = '', $categoria = '', $rawData = false) {
     $httpClient = new HttpClient([
         'base_uri' => 'http://produtos.vitainformatica.com/api/',
     ]);
@@ -115,7 +115,11 @@ function listarProdutos($codigos, $nome = '', $categoria = '') {
         foreach ($responseData as $produto) {
             if (empty($nome) || false !== stripos($produto['nome'], $nome)) {
                 if (empty($categoria) || $produto['idcategoria'] == $categoria) {
-                    yield getProductFields($produto, array_search($produto['codigo'], $codigos));
+                    if (false == $rawData) {
+                        yield getProductFields($produto, array_search($produto['codigo'], $codigos));
+                    } else{
+                        yield $produto;
+                    }
                 }
             }
         }
