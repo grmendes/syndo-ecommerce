@@ -93,6 +93,12 @@ class CheckoutForm extends FormBase {
             'title' => [
                 '#markup' => '<h2>Dados de Pagamento</h2>'
             ],
+            'cpf' => [
+                '#type' => 'textfield',
+                '#title' => 'CPF',
+                '#required' => true,
+            ],                
+
             'mode' => [
                 '#title' => 'Modo de Pagamento',
                 '#type' => 'radios',
@@ -109,18 +115,27 @@ class CheckoutForm extends FormBase {
                 'cardholder' => [
                     '#type' => 'textfield',
                     '#title' => 'Nome do titular do Cartão',
+                    '#required' => true,
                 ],
                 'number' => [
                     '#type' => 'textfield',
                     '#title' => 'Número do Cartão',
+                    '#required' => true,
                 ],
-                'expiry' => [
+                'year' => [
                     '#type' => 'textfield',
-                    '#title' => 'Validade',
+                    '#title' => 'Ano Validade',
+                    '#required' => true,
+                ],
+                'month' => [
+                    '#type' => 'textfield',
+                    '#title' => 'Mes Validade',
+                    '#required' => true,
                 ],
                 'ccv' => [
                     '#type' => 'textfield',
                     '#title' => 'CCV',
+                    '#required' => true,
                 ],
             ],
             'bankTicket' => [
@@ -133,14 +148,17 @@ class CheckoutForm extends FormBase {
                 'fullName' => [
                     '#type' => 'textfield',
                     '#title' => 'Nome do Completo',
+                    '#required' => true,
                 ],
                 'billing_address' => [
                     '#type' => 'textfield',
                     '#title' => 'Endereço de Cobrança',
+                    '#required' => true,
                 ],
                 'billing_zipcode' => [
                     '#type' => 'textfield',
                     '#title' => 'CEP',
+                    '#required' => true,
                 ],
             ],
         );
@@ -158,6 +176,27 @@ class CheckoutForm extends FormBase {
      * {@inheritdoc}
      */
     public function submitForm(array &$form, FormStateInterface $form_state) {
+
+        if ($form_state->getValue('billing_address') != NULL) {
+            
+
+            pagamentoBoleto($form_state->getValue('fullName'), $form_state->getValue('cpf'), 
+            $form_state->getValue('billing_address'), $form_state->getValue('cep'), 30.0);
+        }
+
+
+        if ($form_state->getValue('number') != NULL) {
+
+            registrarCartao($form_state->getValue('number'), true);
+
+            pagamentoCartao($form_state->getValue('cardholder'), $form_state->getValue('cpf'), 
+                $form_state->getValue('number'), $form_state->getValue('month'), $form_state->getValue('year'), 
+                $form_state->getValue('ccv'), 20.90, 4);
+
+        }
+
+
         \Drupal::messenger()->addMessage('Compra efetuada com sucesso!');
+
     }
 }

@@ -18,6 +18,7 @@ include 'libs/categoria.php';
 include 'libs/campo.php';
 include 'libs/sac.php';
 include 'libs/logistica.php';
+include 'libs/pagamento.php';
 
 /**
  * Implements hook_theme().
@@ -393,8 +394,6 @@ function syndo_ecommerce_node_product_form_submit(&$form, FormStateInterface $fo
 
     $formfile = $form_state->getValue('imagem');
     $image_local = '';
-
-    $image_local = NULL;
 
     if ($formfile) {
         $oNewFile = File::load(reset($formfile));
