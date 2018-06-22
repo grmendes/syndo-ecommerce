@@ -43,7 +43,7 @@ class CartDeliveryForm extends FormBase {
     if ($form_state->has('frete')) {
       $frete = $form_state->get('frete');
       $form['valor_calculado'] = array(
-        '#markup' => "<p>Preço: R\$".$frete['preco']."</p><p>Prazo: ".$frete['prazo']."</p>",
+        '#markup' => "<p>Preço: R\$".substr_replace($frete['preco'], ',', -2, 0)."</p><p>Prazo: ".$frete['prazo']." dias úteis.</p>",
       );
     }
     return $form;
@@ -55,33 +55,22 @@ class CartDeliveryForm extends FormBase {
     $cep = $form_state->getValue('zipcode');
     $entrega = $form_state->getValue('entrega');
     $cart_items = $form_state->getBuildInfo()['args'][0];
-      
-    $precoPac = 0;
-    $prazoPac = 0;
-    $precoSedex = 0;
-    $prazoSedex = 0;
+
+    $preco = 0;
+    $prazo = 0;
     foreach ($cart_items as $key => $value) {
       $dadosProduto = visualizarDadosProduto($key);
-      $fretes = calcularTodasOpcoesFrete("13083-872", $cep, $dadosProduto["peso"], 'Caixa', $dadosProduto["dimensao_c"], $dadosProduto["dimensao_a"], $dadosProduto["dimensao_l"]);
-      foreach ($fretes as $tipoEntrega => $dadosFrete) {
-        if ($tipoEntrega == 'pac') {
-          $precoPac += intval($dadosFrete["preco"]) * intval($value["qtd"]);
-          if($prazoPac < intval($dadosFrete["prazo"])) {
-            $prazoPac = intval($dadosFrete["prazo"]);
-          }
-        }
-        if ($tipoEntrega == 'sedex') {
-          $precoSedex += intval($dadosFrete["preco"]) * intval($value["qtd"]);
-          if($prazoSedex < intval($dadosFrete["prazo"])) {
-            $prazoSedex = intval($dadosFrete["prazo"]);
-          }
-        }
+      $frete = calcularFrete($entrega,"13083-872", $cep, $dadosProduto["peso"], 'Caixa', $dadosProduto["dimensao_c"], $dadosProduto["dimensao_a"], $dadosProduto["dimensao_l"]);
+      // var_dump($value);die;
+      $preco += intval($frete["preco"]) * intval($value);
+      if($prazo < intval($frete["prazo"])) {
+        $prazo = intval($frete["prazo"]);
       }
     }
-      
-    $resultadoFretes = array('pac' => array('preco' => $precoPac, 'prazo' => $prazoPac), 'sedex' => array('preco' => $precoSedex, 'prazo' => $prazoSedex));
 
-    $form_state->set('frete', $resultadoFretes[$tipoEntrega]);
+    $resultadoFrete = array('preco' => $preco, 'prazo' => $prazo);
+
+    $form_state->set('frete', $resultadoFrete);
     $form_state->setRebuild();
   }
 }

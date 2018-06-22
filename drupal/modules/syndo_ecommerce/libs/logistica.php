@@ -34,7 +34,7 @@ function calcularFrete($tipoEntrega, $cepOrigem, $cepDestino, $peso, $tipoPacote
 
 //    var_dump($jsonRet['preco']);
 
-    return $jsonRet['preco'];
+    return $jsonRet;
 }
 
 function rastreiaPedido($codigoRastreio) {

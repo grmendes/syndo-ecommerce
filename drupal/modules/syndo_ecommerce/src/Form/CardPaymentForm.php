@@ -28,7 +28,7 @@ class CardPaymentForm extends FormBase {
       '#type' => 'textfield',
       '#title' => t('CPF:'),
       '#required' => TRUE,
-    );    
+    );
     $form['cardNumber'] = array(
       '#type' => 'textfield',
       '#title' => t('Número do Cartão:'),
