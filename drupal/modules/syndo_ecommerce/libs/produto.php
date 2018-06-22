@@ -56,7 +56,7 @@ function visualizarDadosProduto($codigo) {
     // Set some options - we are passing in a useragent too here
     curl_setopt_array($curl, array(
         CURLOPT_RETURNTRANSFER => 1,
-        CURLOPT_URL => 'http://produtos.vitainformatica.com/api/produto?idempresa=1024&id='.$codigo,
+        CURLOPT_URL => 'http://produtos.vitainformatica.com/api/produto?idempresa=1024&codigo='.$codigo,
         CURLOPT_USERAGENT => 'Codular Sample cURL Request'
     ));
 
