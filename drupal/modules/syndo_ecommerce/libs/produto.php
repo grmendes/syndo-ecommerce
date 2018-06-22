@@ -20,6 +20,8 @@ function cadastrarProduto($codigo, $nome, $idcategoria, $preco, $peso, $dimensao
         'campos' => $campos
     );
 
+    var_dump($postData); die;
+
     // Setup cURL
     $ch = curl_init('http://produtos.vitainformatica.com/api/produto?idempresa=1024');
 

@@ -1,8 +1,8 @@
 <?php
 
 //calcularFrete('SEDEX', 13065051, 13348863, 100, 'caixa', 2, 3, 4);
-//rastreiaPedido();
-//cadastrarEntrega(1, 'PAC', 13065051, 13348863, 100, 'Caixa', 1, 1, 1); 
+rastreiaPedido('53a40010-75d9-11e8-945c-275b53f7cbce');
+//cadastrarEntrega(62345, 'PAC', '13348863', '13348863', 1000, 'Caixa', 10, 10, 10); 
 
 function calcularFrete($tipoEntrega, $cepOrigem, $cepDestino, $peso, $tipoPacote, $comprimento, $altura, $largura) {
 
@@ -42,7 +42,7 @@ function rastreiaPedido($codigoRastreio) {
     // Set some options - we are passing in a useragent too here
     curl_setopt_array($curl, array(
         CURLOPT_RETURNTRANSFER => 1,
-        CURLOPT_URL => 'https://hidden-basin-50728.herokuapp.com/rastrearentrega/cod_rastreio=' . $codigoRastreio . '?apiKey=tmvcglg' ,
+        CURLOPT_URL => 'https://hidden-basin-50728.herokuapp.com/rastrearentrega/' . $codigoRastreio . '?apiKey=b5fa7551-226b-5568-b81d-5bb9603b3dbc' ,
         CURLOPT_USERAGENT => 'Codular Sample cURL Request'
     ));
 
@@ -62,7 +62,7 @@ function rastreiaPedido($codigoRastreio) {
     // Print the date from the response
     $jsonRet = json_decode($resp, true);
 
-    var_dump($jsonRet);
+    var_dump($resp);
 
     return $jsonRet;
 }
@@ -79,7 +79,7 @@ function cadastrarEntrega($idProduto, $tipoEntrega, $cepOrigem, $cepDestino, $pe
         'altura' => $altura,
         'largura' => $largura,
         'comprimento' => $comprimento,
-        'apiKey' => 'ahahuahuahuahua',
+        'apiKey' => 'b5fa7551-226b-5568-b81d-5bb9603b3dbc',
     );
 
     // Setup cURL
