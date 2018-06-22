@@ -61,18 +61,21 @@ class CartController extends ControllerBase
 
         $frete_form = Drupal::formBuilder()->getForm('Drupal\syndo_ecommerce\Form\CartDeliveryForm', $cart_items);
 
-
-
+        $checkout_form = Drupal::formBuilder()->getForm('Drupal\syndo_ecommerce\Form\CheckoutForm');
         // var_dump($cart_items);die();
         $element = array(
             '#type' => 'container',
             'lista' => [
                 '#type' => 'table',
-                //'#header' => ['Produto', 'Quantidade', 'Preço'],
-                '#header' => ['Quantidade'],
-                '#rows' => $cart_items
+                '#header' => ['Produto', 'Quantidade'],
+                //'#header' => ['Quantidade'],
+                '#rows' => array_map(null, array_keys($cart_items), $cart_items),
             ],
             'frete' => $frete_form,
+            'checkout' => [
+                '#markup' => '<h1>Finalizar Compra</h1>',
+                'form' => $checkout_form,
+            ],
         );
 
 
