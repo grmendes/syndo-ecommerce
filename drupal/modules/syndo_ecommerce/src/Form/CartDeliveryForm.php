@@ -54,8 +54,10 @@ class CartDeliveryForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $cep = $form_state->getValue('zipcode');
     $entrega = $form_state->getValue('entrega');
-    $cart_items = $form_state->get('args')[0];
+    $cart_items = $form_state->getBuildInfo()['args'][0];
     $resultadoFrete = array('preco' => 0, 'prazo'=> 0);
+    /*highlight_string("<?php\n\$data =\n" . var_export($form_state->getBuildInfo()['args'], true) . ";\n?>");
+    die();*/
     foreach ($cart_items as $key => $value) {
       $dadosProduto = visualizarDadosProduto($key);
       $frete = calcularFrete($entrega, "13083-872", $cep, 1000, 'Caixa', 10, 10, 10);
