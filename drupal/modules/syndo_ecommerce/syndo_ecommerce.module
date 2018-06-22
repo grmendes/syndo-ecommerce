@@ -78,10 +78,10 @@ function _syndo_ecommerce_user_form(&$form, FormStateInterface $form_state) {
     $user = $form_state->getFormObject()->getEntity();
 
     assert($user instanceof \Drupal\user\Entity\User);
-    $userId = $user->get('field_idcliente')->getValue()[0]['value'];
+    $userId = $user->get('field_idcliente')->getValue();
 
-    if (!empty($userId)) {
-        $userData = Client::getById($userId);
+    if (!empty($userId[0])) {
+        $userData = Client::getById($userId[0]['value']);
     }
 
     $form['footer']['#access'] = false;
@@ -140,8 +140,6 @@ function _syndo_ecommerce_user_form(&$form, FormStateInterface $form_state) {
 function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface $form_state, $form_id) {
     array_unshift($form['actions']['submit']['#submit'], 'syndo_ecommerce_node_product_form_submit');
 
-    $form['meta']['#access'] = FALSE;
-    $form['footer']['#access'] = FALSE;
     $form['field_idproduto']['#disabled'] = TRUE;
 
     $form['data'] = [];
