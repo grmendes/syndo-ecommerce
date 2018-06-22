@@ -62,7 +62,7 @@ class CartDeliveryForm extends FormBase {
     $prazoSedex = 0;
     foreach ($cart_items as $key => $value) {
       $dadosProduto = visualizarDadosProduto($key);
-      $fretes = calcularTodasOpcoesFrete("13083-872", $cep, 1000, 'Caixa', 10, 10, 10);
+      $fretes = calcularTodasOpcoesFrete("13083-872", $cep, $dadosProduto["peso"], 'Caixa', $dadosProduto["dimensao_c"], $dadosProduto["dimensao_a"], $dadosProduto["dimensao_l"]);
       foreach ($fretes as $tipoEntrega => $dadosFrete) {
         if ($tipoEntrega == 'pac') {
           $precoPac += intval($dadosFrete["preco"]) * intval($value["qtd"]);
