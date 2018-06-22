@@ -5,12 +5,13 @@
  * Contains syndo_ecommerce.module
  */
 
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\Plugin\DataType\EntityAdapter;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\syndo_ecommerce\Api\Client\Domain\Model\Client;
 use Drupal\file\Entity\File;
-
-
 
 include 'libs/produto.php';
 include 'libs/categoria.php';
@@ -138,8 +139,16 @@ function _syndo_ecommerce_user_form(&$form, FormStateInterface $form_state) {
 function syndo_ecommerce_form_node_product_form_alter(&$form, FormStateInterface $form_state, $form_id) {
     array_unshift($form['actions']['submit']['#submit'], 'syndo_ecommerce_node_product_form_submit');
 
-    $form['data'] = [
+    $form['meta']['#access'] = FALSE;
+    $form['footer']['#access'] = FALSE;
+    $form['field_idproduto']['#disabled'] = TRUE;
 
+    $form['data'] = [];
+
+    $form['data']['descricao'] = [
+        '#type' => 'textarea',
+        '#required' => TRUE,
+        '#title' => t('Descrição'),
     ];
 
     $form['data']['codigo'] = [
@@ -250,8 +259,12 @@ function syndo_ecommerce_form_node_sac_form_alter(&$form, FormStateInterface $fo
 function syndo_ecommerce_form_node_product_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
     $form['field_idproduto']['#disabled'] = TRUE;
 
-    $form['data'] = [
+    $form['data'] = [];
 
+    $form['data']['descricao'] = [
+        '#type' => 'textarea',
+        '#required' => TRUE,
+        '#title' => t('Descrição'),
     ];
 
     $form['data']['codigo'] = [
@@ -310,6 +323,7 @@ function syndo_ecommerce_form_node_product_edit_form_alter(&$form, FormStateInte
             '#type' => 'textfield',
             '#required' => FALSE,
             '#title' => t($campo["nome"]),
+            '#description' => 'Unidade: ' . $campo['unidade'],
         ];
     }
 
@@ -366,6 +380,7 @@ function syndo_ecommerce_user_register_form_submit(&$form, FormStateInterface $f
 
 function syndo_ecommerce_node_product_form_submit(&$form, FormStateInterface $form_state) {
     $array_campos = array();
+    $descricao = $form_state->getValue('descricao', '');
 
     $campos = consultarCampos();
 
@@ -377,20 +392,17 @@ function syndo_ecommerce_node_product_form_submit(&$form, FormStateInterface $fo
     }
 
     $formfile = $form_state->getValue('imagem');
+    $image_local = '';
 
     $image_local = NULL;
 
     if ($formfile) {
         $oNewFile = File::load(reset($formfile));
         $oNewFile->setPermanent();
-        $image_local = 'http://localhost:8080/sites/default/files/image_example_images/' . $oNewFile->getFilename();
+        $image_local = file_url_transform_relative($oNewFile->url());
     }
 
-
-    
-
-
-    $idproduto = cadastrarProduto($form_state->getValue('codigo'), $form_state->getValue('title')[0]['value'], $form_state->getValue('idcategoria'), $form_state->getValue('preco'), $form_state->getValue('peso'), $form_state->getValue('dimensao_a'), $form_state->getValue('dimensao_c'), $form_state->getValue('dimensao_l'), $image_local, $array_campos);
+    $idproduto = cadastrarProduto($form_state->getValue('codigo'), $form_state->getValue('title')[0]['value'], $form_state->getValue('idcategoria'), $form_state->getValue('preco'), $form_state->getValue('peso'), $form_state->getValue('dimensao_a'), $form_state->getValue('dimensao_c'), $form_state->getValue('dimensao_l'), $image_local, $array_campos, $descricao);
 
     $array = array(
         array("value" => $form_state->getValue('codigo')),
@@ -415,7 +427,53 @@ function syndo_ecommerce_node_sac_form_submit(&$form, FormStateInterface $form_s
     if (($form_state->getValue('response') != NULL) || ($form_state->getValue('replyer') != NULL)) {
         adicionarMensagem($form_state->getValue('response'), $form_state->getValue('replyer'), $name, $ticket['systemMessage']);
     }
+}
 
+function syndo_ecommerce_node_view_alter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display) {
+    Drupal::service('page_cache_kill_switch')->trigger();
+    if ($entity->getEntityType()->id() == 'node') {
+        $node = $entity->getTypedData();
+
+        ($node instanceof EntityAdapter);
+        $codProduto = $node->get('field_idproduto')->getValue()[0]['value'];
+
+        $dados = visualizarDadosProduto($codProduto);
+
+        $image_url = !empty($dados['imagem_url']) ? Url::fromUserInput($dados['imagem_url'])->toString() : '';
+
+        $build['dados'] = [
+            '#type' => 'container',
+            'imagem' => [
+                '#children' => "<img style=\"width:50%;float:left;\" src=\"$image_url\"/>",
+            ],
+            'preco' => [
+                '#markup' => '<h2>R$' . $dados['preco'] . '</h2>',
+            ],
+            'descricao' => [
+                '#markup' => '<p>' . $dados['descricao'] . '</p>',
+            ],
+        ];
+
+        $build['dados']['info']['titulo'] = [
+            '#children' => '<h2 style="clear:both;">Informações do Produto</h2>'
+        ];
+
+        $info = array_map(function ($campo) {
+            if (empty($campo['valor'])) {
+                return null;
+            }
+
+            return [
+                $campo['nome'],
+                $campo['valor'] . ' ' . $campo['unidade'],
+            ];
+        }, $dados['campos']);
+        $build['dados']['info']['tabela'] = [
+            '#type' => 'table',
+            '#empty' => 'Dados do produto indisponíveis.',
+            '#rows' => array_filter($info)
+        ];
+    }
 }
 
 function syndo_ecommerce_node_sac_edit_form_submit(&$form, FormStateInterface $form_state) {
