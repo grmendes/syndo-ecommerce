@@ -194,7 +194,7 @@ class CheckoutForm extends FormBase {
                 $this->processCreditCardPurchase($form_state, $cart);
                 break;
             case 'bankTicket':
-                $this->processBankTicketPurchase($form_state, $cart);
+                $this->processBankTicketPurchase($form_state, $cart, $valorTotal);
                 break;
         }
 
@@ -228,33 +228,26 @@ class CheckoutForm extends FormBase {
 //        criaOrder(, 'creditCard', $cart_items);
     }
 
-    protected function processBankTicketPurchase(FormStateInterface $form_state, array $cart_items) {
+    protected function processBankTicketPurchase(FormStateInterface $form_state, array $cart_items, $valorTotal) {
 
-
-        $total = 0;
-        foreach($cart_items as $item) {
-            $total += $item[3];
-        }
-        highlight_string("<?php\n\$data =\n" . var_export($cart_items, true) . ";\n?>");
-
-        $response = pagamentoBoleto(
+        $idPagamento = pagamentoBoleto(
             $form_state->getValue('fullName'),
             $form_state->getValue('cpf'),
             $form_state->getValue('billing_address'),
-            $form_state->getValue('bankTicket')->getValue('billing_zipcode'),
-            $total
+            $form_state->getValue('billing_zipcode'),
+            $valorTotal
         );
-
-        var_dump($response); die();
 
         $idRastreio = registraEntrega($form_state, $cart_items);
 
-        criaOrder($response[''], 'bankTicket', $idRastreio, $cart_items);
+        criaOrder($idPagamento, 'bankTicket', $idRastreio, $cart_items);
     }
 
     private function criaOrder($idPagamento, $meioPagamento, $idRastreio, $cart_items) {
+        var_dump($cart_items); die();
+        $listPedidos = array();
         foreach ($cart_items as $key => $value) {
-
+            array_push($listPedidos, $key);
         }
 
         $node = Node::create([
