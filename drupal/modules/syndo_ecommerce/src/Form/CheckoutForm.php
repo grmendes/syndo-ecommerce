@@ -191,10 +191,10 @@ class CheckoutForm extends FormBase {
 
         switch ($mode) {
             case 'creditCard':
-                $this->processCreditCardPurchase($form_state, $cart, $valorTotal);
+                $this->processCreditCardPurchase($form_state, $cart);
                 break;
             case 'bankTicket':
-                $this->processBankTicketPurchase($form_state, $cart, $valorTotal);
+                $this->processBankTicketPurchase($form_state, $cart);
                 break;
         }
 
@@ -272,7 +272,7 @@ class CheckoutForm extends FormBase {
 
     protected function registraEntrega($form_state, $cart_items) {
 
-        cadastrarEntrega($cart_items['id'], $form_state->getValue('entrega'), 13083-872, $cepDestino, $peso, $tipoPacote, $altura, $largura, $comprimento)
+        cadastrarEntrega($cart_items['id'], $form_state->getValue('entrega'), 13083-872, $cepDestino, $peso, $tipoPacote, $altura, $largura, $comprimento);
 
     }
 }
