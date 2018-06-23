@@ -142,3 +142,27 @@ function calcularTodasOpcoesFrete($cepOrigem, $cepDestino, $peso, $tipoPacote, $
 
     return $jsonRet;
 }
+
+function calcularFreteTotal(string $cep, string $entrega, array $cart_items) {
+    $preco = 0;
+    $prazo = 0;
+
+    $pesoTotal = 0;
+    $comprimentoTotal = 0;
+    $alturaTotal = 0;
+    $larguraTotal = 0;
+
+    foreach ($cart_items as $key => $value) {
+        $pesoTotal += $value[5];
+        $comprimentoTotal += $value[4][2];
+        $larguraTotal += $value[4][1];
+        $alturaTotal += $value[4][0];
+    }
+
+    $frete = calcularFrete($entrega,"13083-872", $cep, $pesoTotal, 'Caixa', $comprimentoTotal, $alturaTotal, $larguraTotal);
+
+    $preco = intval($frete["preco"]);
+    $prazo = intval($frete["prazo"]);
+
+    return array('preco' => $preco, 'prazo' => $prazo);
+}

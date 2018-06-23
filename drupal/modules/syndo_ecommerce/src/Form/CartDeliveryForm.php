@@ -56,19 +56,7 @@ class CartDeliveryForm extends FormBase {
     $entrega = $form_state->getValue('entrega');
     $cart_items = $form_state->getBuildInfo()['args'][0];
 
-    $preco = 0;
-    $prazo = 0;
-    foreach ($cart_items as $key => $value) {
-      $dadosProduto = visualizarDadosProduto($key);
-      $frete = calcularFrete($entrega,"13083-872", $cep, $dadosProduto["peso"], 'Caixa', $dadosProduto["dimensao_c"], $dadosProduto["dimensao_a"], $dadosProduto["dimensao_l"]);
-      // var_dump($value);die;
-      $preco += intval($frete["preco"]) * intval($value);
-      if($prazo < intval($frete["prazo"])) {
-        $prazo = intval($frete["prazo"]);
-      }
-    }
-
-    $resultadoFrete = array('preco' => $preco, 'prazo' => $prazo);
+    $resultadoFrete = calcularFreteTotal($cep, $entrega, $cart_items);
 
     $form_state->set('frete', $resultadoFrete);
     $form_state->setRebuild();

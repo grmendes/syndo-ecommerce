@@ -91,7 +91,7 @@ class CartController extends ControllerBase
 
         $erasecart_form = Drupal::formBuilder()->getForm('Drupal\syndo_ecommerce\Form\EraseCart');
 
-        $frete_form = Drupal::formBuilder()->getForm('Drupal\syndo_ecommerce\Form\CartDeliveryForm', $cart_items);
+        $frete_form = Drupal::formBuilder()->getForm('Drupal\syndo_ecommerce\Form\CartDeliveryForm', $cart_info);
 
         $checkout_form = Drupal::formBuilder()->getForm('Drupal\syndo_ecommerce\Form\CheckoutForm', $cart_info);
 
