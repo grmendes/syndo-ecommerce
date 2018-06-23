@@ -108,8 +108,7 @@ function cadastrarEntrega($idProduto, $tipoEntrega, $cepOrigem, $cepDestino, $pe
     // Print the date from the response
     $jsonRet = json_decode($response, true);
 
-//    return $jsonRet['codigoRastreio'];
-    return $response;
+    return $jsonRet['codigoRastreio'];
 }
 
 
