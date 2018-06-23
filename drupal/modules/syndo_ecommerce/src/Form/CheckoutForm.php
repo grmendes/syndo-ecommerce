@@ -185,13 +185,21 @@ class CheckoutForm extends FormBase {
      * {@inheritdoc}
      */
     public function submitForm(array &$form, FormStateInterface $form_state) {
-        $cart = $this->userPrivateTempstore->get('cart_items') ?? [];
+//        $cart = $this->userPrivateTempstore->get('cart_items') ?? [];
+        $cart = $form_state->getBuildInfo()['args'][0];
         $valorTotal = $form_state->getBuildInfo()['args'][1];
+
+        $cep = $form_state->getValue('zipcode');
+        $entrega = $form_state->getValue('entrega');
+        $resultadoFrete = calcularFreteTotal($cep, $entrega, $cart);
+
+        $valorTotal += $resultadoFrete['preco']; 
+
         $mode = $form_state->getValue('mode');
 
         switch ($mode) {
             case 'creditCard':
-                $this->processCreditCardPurchase($form_state, $cart);
+                $this->processCreditCardPurchase($form_state, $cart, $valorTotal);
                 break;
             case 'bankTicket':
                 $this->processBankTicketPurchase($form_state, $cart, $valorTotal);
@@ -204,14 +212,7 @@ class CheckoutForm extends FormBase {
 
     }
 
-    protected function processCreditCardPurchase(FormStateInterface $form_state, array $cart_items) {
-        $total = 0;
-        foreach($cart_items as $item) {
-            $total += $item[3];
-        }
-
-        $cep = $form_state->getValue('zipcode');
-        $entrega = $form_state->getValue('entrega');
+    protected function processCreditCardPurchase(FormStateInterface $form_state, array $cart_items, $valorTotal) {
 
         registrarCartao($form_state->getValue('number'), true);
 
@@ -222,13 +223,13 @@ class CheckoutForm extends FormBase {
             $form_state->getValue('month'), 
             $form_state->getValue('year'),
             $form_state->getValue('ccv'), 
-            $total, 
+            $valorTotal, 
             $form_state->getValue('instalments')
         );
 
         $idRastreio = $this->registraEntrega($form_state, $cart_items);
 
-//        $this->criaOrder($response['opHash'], 'creditCard', $idRastreio, $cart_items);        
+        $this->criaOrder($response['opHash'], 'creditCard', $idRastreio, $cart_items);        
     }
 
     protected function processBankTicketPurchase(FormStateInterface $form_state, array $cart_items, $valorTotal) {
