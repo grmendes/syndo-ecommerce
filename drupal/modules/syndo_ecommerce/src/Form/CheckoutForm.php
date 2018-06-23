@@ -251,7 +251,7 @@ class CheckoutForm extends FormBase {
     private function criaOrder($idPagamento, $meioPagamento, $idRastreio, $cart_items) {
         $listPedidos = array();
         foreach ($cart_items as $key => $value) {
-            array_push($listPedidos, $key);
+            array_push($listPedidos, $value['id']);
         }
 
         $node = Node::create([
