@@ -33,6 +33,10 @@ function syndo_ecommerce_theme($existing, $type, $theme, $path) {
   return $variables;
 }
 
+function syndo_ecommerce_page_attachments(array &$page) {
+    $page['#attached']['library'][] = 'syndo_ecommerce/appearance_settings';
+}
+
 function syndo_ecommerce_form_user_form_alter(&$form, FormStateInterface $form_state, $form_id) {
     _syndo_ecommerce_user_form($form, $form_state);
 

@@ -2,5 +2,5 @@
 appearance_settings:
   version: "8.x-1.0"
   css:
-    component:
+    theme:
       css/appearance_settings.css: {}
