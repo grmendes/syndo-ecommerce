@@ -6,7 +6,7 @@
 //pagamentoCartao('Gustavo', 81932308091, 8723456312345768, 07, 2027, 772, 1000, 10);
 
 function pagamentoBoleto($name, $cpf, $address, $cep, $value) {
-    
+
     $postData = array(
         'clientName' => $name,
         'cpf' => $cpf,
@@ -41,7 +41,7 @@ function pagamentoBoleto($name, $cpf, $address, $cep, $value) {
 
     error_log($jsonRet);
 
-    return $jsonRet; 
+    return $jsonRet['code']; 
 }
 
 

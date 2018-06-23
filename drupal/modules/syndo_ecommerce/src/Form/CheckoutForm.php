@@ -194,7 +194,7 @@ class CheckoutForm extends FormBase {
                 $this->processCreditCardPurchase($form_state, $cart);
                 break;
             case 'bankTicket':
-                $this->processBankTicketPurchase($form_state, $cart);
+                $this->processBankTicketPurchase($form_state, $cart, $valorTotal);
                 break;
         }
 
@@ -233,43 +233,35 @@ class CheckoutForm extends FormBase {
 //        $this->criaOrder($response['opHash'], 'creditCard', $idRastreio, $cart_items);        
     }
 
-    protected function processBankTicketPurchase(FormStateInterface $form_state, array $cart_items) {
+    protected function processBankTicketPurchase(FormStateInterface $form_state, array $cart_items, $valorTotal) {
 
-
-        $total = 0;
-        foreach($cart_items as $item) {
-            $total += $item[3];
-        }
-        highlight_string("<?php\n\$data =\n" . var_export($cart_items, true) . ";\n?>");
-
-        $response = pagamentoBoleto(
+        $idPagamento = pagamentoBoleto(
             $form_state->getValue('fullName'),
             $form_state->getValue('cpf'),
             $form_state->getValue('billing_address'),
-            $form_state->getValue('bankTicket')->getValue('billing_zipcode'),
-            $total
+            $form_state->getValue('billing_zipcode'),
+            $valorTotal
         );
 
         $idRastreio = $this->registraEntrega($form_state, $cart_items);
 
-
-        criaOrder($response[''], 'bankTicket', $idRastreio, $cart_items);
-
+        $this->criaOrder($idPagamento, 'bankTicket', $idRastreio, $cart_items);
     }
 
     private function criaOrder($idPagamento, $meioPagamento, $idRastreio, $cart_items) {
+        $listPedidos = array();
         foreach ($cart_items as $key => $value) {
-
+            array_push($listPedidos, $key);
         }
 
         $node = Node::create([
-            'type' => 'article',
+            'type' => 'order',
             'title' => 'Order',
             'field_datapedido' => format_date(time(), 'custom', 'l j F Y'),
             'field_idpagamento' => $idPagamento,
             'field_idrastreio' => $idRastreio,
             'field_idstatus' => '',
-            'field_listidproduto' => '',
+            'field_listidproduto' => $listPedidos,
             'field_meiopagamento' => $meioPagamento
         ]);
         $node->save();
