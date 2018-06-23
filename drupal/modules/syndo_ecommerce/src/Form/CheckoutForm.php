@@ -198,13 +198,9 @@ class CheckoutForm extends FormBase {
                 break;
         }
 
-        $this->registraEntrega($form_state, $cart);
-
         $this->userPrivateTempstore->delete('cart_items');
 
         \Drupal::messenger()->addMessage('Compra efetuada com sucesso!');
-
-
 
     }
 
@@ -219,13 +215,20 @@ class CheckoutForm extends FormBase {
 
         registrarCartao($form_state->getValue('number'), true);
 
-        pagamentoCartao($form_state->getValue('cardholder'), $form_state->getValue('cpf'),
-            $form_state->getValue('number'), $form_state->getValue('month'), $form_state->getValue('year'),
-            $form_state->getValue('ccv'), $total, $form_state->getValue('instalments'));
+        $response = pagamentoCartao(
+            $form_state->getValue('cardholder'), 
+            $form_state->getValue('cpf'),
+            $form_state->getValue('number'), 
+            $form_state->getValue('month'), 
+            $form_state->getValue('year'),
+            $form_state->getValue('ccv'), 
+            $total, 
+            $form_state->getValue('instalments')
+        );
 
-//        registraEntrega($form_state, $cart_items);
+        $idRastreio = $this->registraEntrega($form_state, $cart_items);
 
-//        criaOrder(, 'creditCard', $cart_items);
+        $this->criaOrder($response['opHash'], 'creditCard', $idRastreio, $cart_items);        
     }
 
     protected function processBankTicketPurchase(FormStateInterface $form_state, array $cart_items, $valorTotal) {
@@ -238,26 +241,25 @@ class CheckoutForm extends FormBase {
             $valorTotal
         );
 
-        $idRastreio = registraEntrega($form_state, $cart_items);
+        $idRastreio = $this->registraEntrega($form_state, $cart_items);
 
-        criaOrder($idPagamento, 'bankTicket', $idRastreio, $cart_items);
+        $this->criaOrder($idPagamento, 'bankTicket', $idRastreio, $cart_items);
     }
 
     private function criaOrder($idPagamento, $meioPagamento, $idRastreio, $cart_items) {
-        var_dump($cart_items); die();
         $listPedidos = array();
         foreach ($cart_items as $key => $value) {
             array_push($listPedidos, $key);
         }
 
         $node = Node::create([
-            'type' => 'article',
+            'type' => 'order',
             'title' => 'Order',
-            'field_datapedido' => Timestamp::getDateTime(),
+            'field_datapedido' => format_date(time(), 'custom', 'l j F Y'),
             'field_idpagamento' => $idPagamento,
             'field_idrastreio' => $idRastreio,
             'field_idstatus' => '',
-            'field_listidproduto' => '',
+            'field_listidproduto' => $listPedidos,
             'field_meiopagamento' => $meioPagamento
         ]);
         $node->save();
@@ -265,7 +267,9 @@ class CheckoutForm extends FormBase {
 
     protected function registraEntrega($form_state, $cart_items) {
 
-        cadastrarEntrega($cart_items['id'], $form_state->getValue('entrega'), 13083-872, $cepDestino, $peso, $tipoPacote, $altura, $largura, $comprimento);
+        return cadastrarEntrega($cart_items['id'], $form_state->getValue('entrega'), 
+            '13083872', $form_state->getValue('zipcode'), $cart_items['peso'], 'Caixa', 
+            $cart_items['altura'], $cart_items['largura'], $cart_items['comprimento']);
 
     }
 }
