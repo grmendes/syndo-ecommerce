@@ -89,6 +89,15 @@ class CheckoutForm extends FormBase {
                 '#title' => t('CEP:'),
                 '#required' => true,
             ],
+            'tipo_entrega' => [
+                '#type' => 'select',
+                '#required' => TRUE,
+                '#title' => t('Tipo da Entrega'),
+                '#options' => [
+                    'PAC' => t('PAC'),
+                    'SEDEX' => t('SEDEX'),
+                ],
+            ],
         );
         $form['billing'] = array(
             '#type' => 'container',
@@ -133,6 +142,11 @@ class CheckoutForm extends FormBase {
                 'ccv' => [
                     '#type' => 'textfield',
                     '#title' => 'CCV',
+                ],
+                'instalments' => [
+                    '#type' => 'select',
+                    '#title' => t('Parcelas'),
+                    '#options' => array_combine(range(1, 4), range(1, 4)),
                 ],
             ],
             'bankTicket' => [
@@ -200,11 +214,13 @@ class CheckoutForm extends FormBase {
             $total += $item[3];
         }
 
+        $total += $frete;
+
         registrarCartao($form_state->getValue('number'), true);
 
         pagamentoCartao($form_state->getValue('cardholder'), $form_state->getValue('cpf'),
             $form_state->getValue('number'), $form_state->getValue('month'), $form_state->getValue('year'),
-            $form_state->getValue('ccv'), 20.90, 4);
+            $form_state->getValue('ccv'), $total, $form_state->getValue('instalments'));
     }
 
     protected function processBankTicketPurchase(FormStateInterface $form_state, array $cart_items) {
