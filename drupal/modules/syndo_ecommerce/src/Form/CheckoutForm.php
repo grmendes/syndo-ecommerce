@@ -186,8 +186,13 @@ class CheckoutForm extends FormBase {
      */
     public function submitForm(array &$form, FormStateInterface $form_state) {
         $cart = $this->userPrivateTempstore->get('cart_items') ?? [];
-        $valorTotal = $form_state->getBuildInfo()['args'][1];
+        $valorProdutos = $form_state->getBuildInfo()['args'][1];
         $mode = $form_state->getValue('mode');
+        $frete = $form_state->get('frete');
+
+        var_dump($frete); die();
+        
+        $valorTotal = $valorProdutos + $frete['preco'];
 
         switch ($mode) {
             case 'creditCard':
