@@ -230,7 +230,7 @@ class CheckoutForm extends FormBase {
 
         $idRastreio = $this->registraEntrega($form_state, $cart_items);
 
-        $this->criaOrder($response['opHash'], 'creditCard', $idRastreio, $cart_items);        
+//        $this->criaOrder($response['opHash'], 'creditCard', $idRastreio, $cart_items);        
     }
 
     protected function processBankTicketPurchase(FormStateInterface $form_state, array $cart_items, $valorTotal) {
@@ -269,11 +269,10 @@ class CheckoutForm extends FormBase {
 
     protected function registraEntrega($form_state, $cart_items) {
 
-//        var_dump($cart_items); die;
-
-        return cadastrarEntrega($cart_items['id'], $form_state->getValue('entrega'), 
-            '13083872', $form_state->getValue('zipcode'), $cart_items['peso'], 'Caixa', 
-            $cart_items['altura'], $cart_items['largura'], $cart_items['comprimento']);
+        return cadastrarEntrega($cart_items[0]['id'], $form_state->getValue('entrega'), 
+            '13083872', $form_state->getValue('zipcode'), $cart_items[0]['peso'], 'Caixa', 
+            $cart_items[0]['dimensoes']['altura'], $cart_items[0]['dimensoes']['largura'], 
+            $cart_items[0]['dimensoes']['comprimento']);
 
     }
 }
