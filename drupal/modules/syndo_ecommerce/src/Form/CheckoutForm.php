@@ -254,7 +254,7 @@ class CheckoutForm extends FormBase {
         $node = Node::create([
             'type' => 'article',
             'title' => 'Order',
-            'field_datapedido' => Timestamp::getDateTime(),
+            'field_datapedido' => format_date(time(), 'custom', 'l j F Y'),
             'field_idpagamento' => $idPagamento,
             'field_idrastreio' => $idRastreio,
             'field_idstatus' => '',
