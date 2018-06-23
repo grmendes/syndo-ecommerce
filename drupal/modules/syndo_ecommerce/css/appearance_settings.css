@@ -1,0 +1,13 @@
+.cart-deliver-form {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 370px;
+}
+
+.cart-deliver-form #edit-entrega {
+    margin: 2.5px 0;
+}
+
+.cart-deliver-form .form-item {
+    margin: 1em 15px;
+}

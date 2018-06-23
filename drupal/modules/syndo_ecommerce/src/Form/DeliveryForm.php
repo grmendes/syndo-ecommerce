@@ -47,7 +47,7 @@ class DeliveryForm extends FormBase {
       );
       $frete = $form_state->get('frete')['prazo'];
       $form['prazo_estipulado'] = array(
-        '#markup' => "<p>Prazo: $frete dias</p>",
+        '#markup' => "<p>Prazo: $frete dias úteis</p>",
       );
     }
     return $form;
