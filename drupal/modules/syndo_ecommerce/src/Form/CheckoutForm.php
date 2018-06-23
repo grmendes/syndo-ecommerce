@@ -197,13 +197,9 @@ class CheckoutForm extends FormBase {
                 break;
         }
 
-        $this->registraEntrega($form_state, $cart);
-
         $this->userPrivateTempstore->delete('cart_items');
 
         \Drupal::messenger()->addMessage('Compra efetuada com sucesso!');
-
-
 
     }
 
@@ -218,13 +214,20 @@ class CheckoutForm extends FormBase {
 
         registrarCartao($form_state->getValue('number'), true);
 
-        pagamentoCartao($form_state->getValue('cardholder'), $form_state->getValue('cpf'),
-            $form_state->getValue('number'), $form_state->getValue('month'), $form_state->getValue('year'),
-            $form_state->getValue('ccv'), $total, $form_state->getValue('instalments'));
+        $response = pagamentoCartao(
+            $form_state->getValue('cardholder'), 
+            $form_state->getValue('cpf'),
+            $form_state->getValue('number'), 
+            $form_state->getValue('month'), 
+            $form_state->getValue('year'),
+            $form_state->getValue('ccv'), 
+            $total, 
+            $form_state->getValue('instalments')
+        );
 
-//        registraEntrega($form_state, $cart_items);
+        $idRastreio = $this->registraEntrega($form_state, $cart_items);
 
-//        criaOrder(, 'creditCard', $cart_items);
+        $this->criaOrder($response['opHash'], 'creditCard', $idRastreio, $cart_items);        
     }
 
     protected function processBankTicketPurchase(FormStateInterface $form_state, array $cart_items) {
@@ -241,11 +244,9 @@ class CheckoutForm extends FormBase {
             $total
         );
 
-        var_dump($response); die();
+        $idRastreio = $this->registraEntrega($form_state, $cart_items);
 
-        $idRastreio = registraEntrega($form_state, $cart_items);
-
-        criaOrder($response[''], 'boleto', $idRastreio, $cart_items);
+        $this->criaOrder($response[''], 'boleto', $idRastreio, $cart_items);
     }
 
     private function criaOrder($idPagamento, $meioPagamento, $idRastreio, $cart_items) {
@@ -266,7 +267,9 @@ class CheckoutForm extends FormBase {
 
     protected function registraEntrega($form_state, $cart_items) {
 
-        cadastrarEntrega($cart_items['id'], $form_state->getValue('entrega'), 13083-872, $cepDestino, $peso, $tipoPacote, $altura, $largura, $comprimento)
+        return cadastrarEntrega($cart_items['id'], $form_state->getValue('entrega'), 
+            '13083872', $form_state->getValue('zipcode'), $cart_items['peso'], 'Caixa', 
+            $cart_items['altura'], $cart_items['largura'], $cart_items['comprimento']);
 
     }
 }
