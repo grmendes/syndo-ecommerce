@@ -186,6 +186,7 @@ class CheckoutForm extends FormBase {
      */
     public function submitForm(array &$form, FormStateInterface $form_state) {
         $cart = $this->userPrivateTempstore->get('cart_items') ?? [];
+        $valorTotal = $form_state->getBuildInfo()['args'][1];
         $mode = $form_state->getValue('mode');
 
         switch ($mode) {
@@ -231,25 +232,33 @@ class CheckoutForm extends FormBase {
     }
 
     protected function processBankTicketPurchase(FormStateInterface $form_state, array $cart_items) {
+
+
         $total = 0;
         foreach($cart_items as $item) {
             $total += $item[3];
         }
+        highlight_string("<?php\n\$data =\n" . var_export($cart_items, true) . ";\n?>");
 
         $response = pagamentoBoleto(
             $form_state->getValue('fullName'),
             $form_state->getValue('cpf'),
             $form_state->getValue('billing_address'),
-            $form_state->getValue('cep'),
+            $form_state->getValue('bankTicket')->getValue('billing_zipcode'),
             $total
         );
 
         $idRastreio = $this->registraEntrega($form_state, $cart_items);
 
-        $this->criaOrder($response[''], 'boleto', $idRastreio, $cart_items);
+
+        criaOrder($response[''], 'bankTicket', $idRastreio, $cart_items);
+
     }
 
     private function criaOrder($idPagamento, $meioPagamento, $idRastreio, $cart_items) {
+        foreach ($cart_items as $key => $value) {
+
+        }
 
         $node = Node::create([
             'type' => 'article',
@@ -262,7 +271,6 @@ class CheckoutForm extends FormBase {
             'field_meiopagamento' => $meioPagamento
         ]);
         $node->save();
-
     }
 
     protected function registraEntrega($form_state, $cart_items) {

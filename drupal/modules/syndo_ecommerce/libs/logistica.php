@@ -153,10 +153,10 @@ function calcularFreteTotal(string $cep, string $entrega, array $cart_items) {
     $larguraTotal = 0;
 
     foreach ($cart_items as $key => $value) {
-        $pesoTotal += $value[5];
-        $comprimentoTotal += $value[4][2];
-        $larguraTotal += $value[4][1];
-        $alturaTotal += $value[4][0];
+        $pesoTotal += $value['peso'] * $value['qtd'];
+        $comprimentoTotal += $value['dimensoes']['comprimento'] * $value['qtd'];
+        $larguraTotal += $value['dimensoes']['largura'] * $value['qtd'];
+        $alturaTotal += $value['dimensoes']['altura'] * $value['qtd'];
     }
 
     $frete = calcularFrete($entrega,"13083-872", $cep, $pesoTotal, 'Caixa', $comprimentoTotal, $alturaTotal, $larguraTotal);

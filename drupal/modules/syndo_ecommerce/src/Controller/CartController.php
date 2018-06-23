@@ -97,7 +97,7 @@ class CartController extends ControllerBase
 
         $frete_form = Drupal::formBuilder()->getForm('Drupal\syndo_ecommerce\Form\CartDeliveryForm', $cart_info);
 
-        $checkout_form = Drupal::formBuilder()->getForm('Drupal\syndo_ecommerce\Form\CheckoutForm', $cart_info);
+        $checkout_form = Drupal::formBuilder()->getForm('Drupal\syndo_ecommerce\Form\CheckoutForm', $cart_info, $total);
 
         $element = array(
             '#type' => 'container',

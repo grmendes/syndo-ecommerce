@@ -49,7 +49,7 @@ class OrderController {
       $situacaopagamento = "Aprovado";
 
       $meiopagamento = $node->get('field_meiopagamento')->getValue();
-      if ($meiopagamento == "boleto") {
+      if ($meiopagamento == "bankTicket") {
         $idpagamento = $node->get('field_idpagamento')->getValue();
         $situacaopagamento = situacaoBoleto($idpagamento);
       }
