@@ -186,7 +186,6 @@ class CheckoutForm extends FormBase {
      */
     public function submitForm(array &$form, FormStateInterface $form_state) {
 
-//        $cart = $this->userPrivateTempstore->get('cart_items') ?? [];
         $cart = $form_state->getBuildInfo()['args'][0];
         $valorTotal = $form_state->getBuildInfo()['args'][1];
 
