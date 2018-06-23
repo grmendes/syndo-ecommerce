@@ -224,21 +224,20 @@ class CheckoutForm extends FormBase {
 
         $idRastreio = registraEntrega($form_state, $cart_items);
 
-        criaOrder($response[''], 'boleto', $idRastreio);
+        criaOrder($response[''], 'boleto', $idRastreio, $cart_items);
     }
 
-    private function criaOrder($idPagamento, $meioPagamento, $idRastreio) {
+    private function criaOrder($idPagamento, $meioPagamento, $idRastreio, $cart_items) {
 
         $node = Node::create([
             'type' => 'article',
             'title' => 'Order',
             'field_datapedido' => Timestamp::getDateTime(),
-            'field_idpagamento' => $response[''],
-            'field_idpedido' => '',
-            'field_idrastreio' => '',
+            'field_idpagamento' => $idPagamento,
+            'field_idrastreio' => $idRastreio,
             'field_idstatus' => '',
             'field_listidproduto' => '',
-            'field_meiopagamento' => 'boleto'
+            'field_meiopagamento' => $meioPagamento
         ]);
         $node->save();
 
