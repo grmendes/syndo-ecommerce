@@ -198,6 +198,8 @@ class CheckoutForm extends FormBase {
                 break;
         }
 
+        $idRastreio = $this->registraEntrega($form_state, $cart);
+
         $this->userPrivateTempstore->delete('cart_items');
 
         \Drupal::messenger()->addMessage('Compra efetuada com sucesso!');
@@ -226,9 +228,9 @@ class CheckoutForm extends FormBase {
             $form_state->getValue('instalments')
         );
 
-        $idRastreio = $this->registraEntrega($form_state, $cart_items);
+//        $idRastreio = $this->registraEntrega($form_state, $cart_items);
 
-        $this->criaOrder($response['opHash'], 'creditCard', $idRastreio, $cart_items);        
+//        $this->criaOrder($response['opHash'], 'creditCard', $idRastreio, $cart_items);        
     }
 
     protected function processBankTicketPurchase(FormStateInterface $form_state, array $cart_items) {
@@ -274,6 +276,8 @@ class CheckoutForm extends FormBase {
     }
 
     protected function registraEntrega($form_state, $cart_items) {
+
+        var_dump($cart_items); die;
 
         return cadastrarEntrega($cart_items['id'], $form_state->getValue('entrega'), 
             '13083872', $form_state->getValue('zipcode'), $cart_items['peso'], 'Caixa', 
