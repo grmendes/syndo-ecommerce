@@ -181,22 +181,38 @@ class CheckoutForm extends FormBase {
         return $form;
     }
 
+    public function validateForm(array &$form, FormStateInterface $form_state)
+    {
+        $cart = $form_state->getBuildInfo()['args'][0];
+
+        $cep = $form_state->getValue('zipcode');
+        $entrega = $form_state->getValue('entrega');
+        $resultadoFrete = calcularFreteTotal($cep, $entrega, $cart);
+
+        if (empty($resultadoFrete)) {
+            $form_state->setError($form, 'Não entregamos no CEP indicado ou ele é inválido');
+        }
+
+        $form_state->set('frete', $resultadoFrete);
+
+    }
+
+
     /**
      * {@inheritdoc}
      */
     public function submitForm(array &$form, FormStateInterface $form_state) {
+        $frete = $form_state->get('frete') ?? ['preco' => 0, 'prazo' => 1];
 
         $cart = $form_state->getBuildInfo()['args'][0];
         $valorTotal = $form_state->getBuildInfo()['args'][1];
 
         $cep = $form_state->getValue('zipcode');
         $entrega = $form_state->getValue('entrega');
-        $resultadoFrete = calcularFreteTotal($cep, $entrega, $cart);
 
-        $valorTotal += $resultadoFrete['preco']; 
+        $valorTotal += $frete['preco'];
 
         $mode = $form_state->getValue('mode');
-        $frete = $form_state->get('frete');
 
         switch ($mode) {
             case 'creditCard':
@@ -206,6 +222,8 @@ class CheckoutForm extends FormBase {
                 $this->processBankTicketPurchase($form_state, $cart, $valorTotal);
                 break;
         }
+
+        return;
 
         $this->userPrivateTempstore->delete('cart_items');
 

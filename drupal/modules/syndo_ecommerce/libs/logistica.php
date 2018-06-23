@@ -33,7 +33,7 @@ function calcularFrete($tipoEntrega, $cepOrigem, $cepDestino, $peso, $tipoPacote
     // Print the date from the response
     $jsonRet = json_decode($resp, true);
 
-//    var_dump($jsonRet['preco']);
+    error_log(print_r($jsonRet, true));
 
     return $jsonRet;
 }
@@ -139,6 +139,8 @@ function calcularTodasOpcoesFrete($cepOrigem, $cepDestino, $peso, $tipoPacote, $
     // Print the date from the response
     $jsonRet = json_decode($resp, true);
 
+    error_log(print_r($jsonRet, true));
+
     return $jsonRet;
 }
 
@@ -159,6 +161,10 @@ function calcularFreteTotal(string $cep, string $entrega, array $cart_items) {
     }
 
     $frete = calcularFrete($entrega,"13083-872", $cep, $pesoTotal, 'Caixa', $comprimentoTotal, $alturaTotal, $larguraTotal);
+
+    if (isset($frete['message'])) {
+        return null;
+    }
 
     $preco = intval($frete["preco"]);
     $prazo = intval($frete["prazo"]);

@@ -51,7 +51,7 @@ class CartDeliveryForm extends FormBase
             $form['valor_calculado'] = array(
                 '#type' => 'table',
                 '#rows' => [
-                    ['Valor', 'R$' . number_format($frete['preco'], 2, ',', '.')],
+                    ['Valor', 'R$' . number_format($frete['preco'] / 100, 2, ',', '.')],
                     ['Prazo', $frete['prazo'] . ' dias úteis.'],
                 ],
                 '#weight' => 500,

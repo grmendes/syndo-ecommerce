@@ -39,7 +39,11 @@ function pagamentoBoleto($name, $cpf, $address, $cep, $value) {
     // Print the date from the response
     $jsonRet = json_decode($response, true);
 
-    // error_log($jsonRet);
+    error_log(print_r($jsonRet, true));
+
+    if (isset($jsonRet['errorMessage'])) {
+        return null;
+    }
 
     return $jsonRet['code']; 
 }
