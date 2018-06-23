@@ -89,7 +89,7 @@ class CheckoutForm extends FormBase {
                 '#title' => t('CEP:'),
                 '#required' => true,
             ],
-            'tipo_entrega' => [
+            'entrega' => [
                 '#type' => 'select',
                 '#required' => TRUE,
                 '#title' => t('Tipo da Entrega'),
@@ -214,13 +214,18 @@ class CheckoutForm extends FormBase {
             $total += $item[3];
         }
 
-        $total += $frete;
+        $cep = $form_state->getValue('zipcode');
+        $entrega = $form_state->getValue('entrega');
 
         registrarCartao($form_state->getValue('number'), true);
 
         pagamentoCartao($form_state->getValue('cardholder'), $form_state->getValue('cpf'),
             $form_state->getValue('number'), $form_state->getValue('month'), $form_state->getValue('year'),
             $form_state->getValue('ccv'), $total, $form_state->getValue('instalments'));
+
+//        registraEntrega($form_state, $cart_items);
+
+//        criaOrder(, 'creditCard', $cart_items);
     }
 
     protected function processBankTicketPurchase(FormStateInterface $form_state, array $cart_items) {
@@ -265,7 +270,9 @@ class CheckoutForm extends FormBase {
         $node->save();
     }
 
-    protected function registraEntrega($form_state, $cart)
-    {
+    protected function registraEntrega($form_state, $cart_items) {
+
+        cadastrarEntrega($cart_items['id'], $form_state->getValue('entrega'), 13083-872, $cepDestino, $peso, $tipoPacote, $altura, $largura, $comprimento)
+
     }
 }

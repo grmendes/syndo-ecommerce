@@ -71,12 +71,16 @@ class CartController extends ControllerBase
                 $qtd = intval($cart_items[$product['codigo']]);
 
                 $cart_info[] = [
-                    $product['nome'],
-                    $qtd,
-                    $precoUn,
-                    $precoUn * $qtd,
-                    [$product['dimensao_a'] ?? 1,$product['dimensao_l'] ?? 1,$product['dimensao_c'] ?? 1],
-                    $product['peso'] ?? 0.1,
+                    'id' => $product['id'],
+                    'qtd' => $qtd,
+                    'preco' => $precoUn,
+                    'precoTotal' => $precoUn * $qtd,
+                    'dimensoes' => [
+                        'altura' => $product['dimensao_a'] ?? 1,
+                        'largura' => $product['dimensao_l'] ?? 1,
+                        'comprimento' => $product['dimensao_c'] ?? 1,
+                    ],
+                    'peso' => $product['peso'] ?? 0.1,
                 ];
                 $total += $precoUn * $qtd;
 
