@@ -8,6 +8,8 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Session\SessionManager;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\Core\TempStore\TempStoreException;
+use Drupal\Core\TypedData\Plugin\DataType;
+use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class CheckoutForm extends FormBase {
@@ -210,13 +212,36 @@ class CheckoutForm extends FormBase {
             $total += $item[3];
         }
 
-        pagamentoBoleto(
+        $response = pagamentoBoleto(
             $form_state->getValue('fullName'),
             $form_state->getValue('cpf'),
             $form_state->getValue('billing_address'),
             $form_state->getValue('cep'),
             $total
         );
+
+        var_dump($response); die();
+
+        $idRastreio = registraEntrega($form_state, $cart_items);
+
+        criaOrder($response[''], 'boleto', $idRastreio);
+    }
+
+    private function criaOrder($idPagamento, $meioPagamento, $idRastreio) {
+
+        $node = Node::create([
+            'type' => 'article',
+            'title' => 'Order',
+            'field_datapedido' => Timestamp::getDateTime(),
+            'field_idpagamento' => $response[''],
+            'field_idpedido' => '',
+            'field_idrastreio' => '',
+            'field_idstatus' => '',
+            'field_listidproduto' => '',
+            'field_meiopagamento' => 'boleto'
+        ]);
+        $node->save();
+
     }
 
     protected function registraEntrega($form_state, $cart)
