@@ -41,9 +41,13 @@ class DeliveryForm extends FormBase {
     );
 
     if ($form_state->has('frete')) {
-      $frete = number_format($form_state->get('frete'), 2);
+      $frete = number_format($form_state->get('frete')['preco'], 2, ',', '.');
       $form['valor_calculado'] = array(
         '#markup' => "<p>Valor: R$ $frete</p>",
+      );
+      $frete = $form_state->get('frete')['prazo'];
+      $form['prazo_estipulado'] = array(
+        '#markup' => "<p>Prazo: $frete dias</p>",
       );
     }
     return $form;
@@ -56,10 +60,6 @@ class DeliveryForm extends FormBase {
     $entrega = $form_state->getValue('entrega');
 
     $frete = calcularFrete($entrega, 13083872, $cep, 1000, 'Caixa', 10, 10, 10);
-
-    /*
-     * @TODO: Chamar api com o CEP passado.
-    */
 
     $form_state->set('frete', $frete);
     $form_state->setRebuild();
