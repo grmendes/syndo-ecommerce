@@ -248,7 +248,7 @@ class CheckoutForm extends FormBase {
 
         $idRastreio = $this->registraEntrega($form_state, $cart_items);
 
-        return $this->criaOrder($response['opHash'], 'creditCard', $idRastreio['codigoRastreio'], $cart_items);
+        return $this->criaOrder($response['opHash'], 'creditCard', $idRastreio, $cart_items);
     }
 
     protected function processBankTicketPurchase(FormStateInterface $form_state, array $cart_items, $valorTotal) {
