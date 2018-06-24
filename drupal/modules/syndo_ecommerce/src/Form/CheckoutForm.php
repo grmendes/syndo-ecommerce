@@ -202,22 +202,21 @@ class CheckoutForm extends FormBase {
 
         $mode = $form_state->getValue('mode');
 
+        $idPedido = null;
         switch ($mode) {
             case 'creditCard':
-                $this->processCreditCardPurchase($form_state, $cart, $valorTotal);
-
-                $form_state->setError($form, 'Cartão cobrado');
+                $idPedido = $this->processCreditCardPurchase($form_state, $cart, $valorTotal);
                 break;
             case 'bankTicket':
-                $this->processBankTicketPurchase($form_state, $cart, $valorTotal);
-
-                $form_state->setError($form, 'Boleto feito');
+                $idPedido = $this->processBankTicketPurchase($form_state, $cart, $valorTotal);
                 break;
         }
-        return;
 
-        $this->userPrivateTempstore->delete('cart_items');
+        if (empty($idPedido)) {
+            $form_state->setError($form, 'Um erro ocorreu ao processar sua compra. Por favor tente novamente.');
+        }
 
+        $form_state->set('idPedido', $idPedido);
     }
 
 
@@ -225,10 +224,11 @@ class CheckoutForm extends FormBase {
      * {@inheritdoc}
      */
     public function submitForm(array &$form, FormStateInterface $form_state) {
-        $frete = $form_state->get('frete') ?? ['preco' => 0, 'prazo' => 1];
+        $this->userPrivateTempstore->delete('cart_items');
 
-        \Drupal::messenger()->addMessage('Compra efetuada com sucesso!');
+        $idPedido = $form_state->get('idPedido');
 
+        \Drupal::messenger()->addMessage('Compra efetuada com sucesso! Identificador do pedido: ' . $idPedido);
     }
 
     protected function processCreditCardPurchase(FormStateInterface $form_state, array $cart_items, $valorTotal) {
@@ -248,7 +248,7 @@ class CheckoutForm extends FormBase {
 
         $idRastreio = $this->registraEntrega($form_state, $cart_items);
 
-        $this->criaOrder($response['opHash'], 'creditCard', $idRastreio['codigoRastreio'], $cart_items);
+        return $this->criaOrder($response['opHash'], 'creditCard', $idRastreio['codigoRastreio'], $cart_items);
     }
 
     protected function processBankTicketPurchase(FormStateInterface $form_state, array $cart_items, $valorTotal) {
@@ -263,7 +263,7 @@ class CheckoutForm extends FormBase {
 
         $idRastreio = $this->registraEntrega($form_state, $cart_items);
 
-        $this->criaOrder($idPagamento, 'bankTicket', $idRastreio, $cart_items);
+        return $this->criaOrder($idPagamento, 'bankTicket', $idRastreio, $cart_items);
     }
 
     private function criaOrder($idPagamento, $meioPagamento, $idRastreio, $cart_items) {
@@ -289,6 +289,8 @@ class CheckoutForm extends FormBase {
         ]);
 
         $node->save();
+
+        return $node->id();
     }
 
     protected function registraEntrega($form_state, $cart_items) {
