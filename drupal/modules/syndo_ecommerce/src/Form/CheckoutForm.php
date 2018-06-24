@@ -9,6 +9,7 @@ use Drupal\Core\Session\SessionManager;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\Core\TempStore\TempStoreException;
 use Drupal\Core\TypedData\Plugin\DataType;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -193,7 +194,29 @@ class CheckoutForm extends FormBase {
             $form_state->setError($form, 'Não entregamos no CEP indicado ou ele é inválido');
         }
 
-        $form_state->set('frete', $resultadoFrete);
+
+        $cart = $form_state->getBuildInfo()['args'][0];
+        $valorTotal = $form_state->getBuildInfo()['args'][1];
+
+        $valorTotal += $resultadoFrete['preco'];
+
+        $mode = $form_state->getValue('mode');
+
+        switch ($mode) {
+            case 'creditCard':
+                $this->processCreditCardPurchase($form_state, $cart, $valorTotal);
+
+                $form_state->setError($form, 'Cartão cobrado');
+                break;
+            case 'bankTicket':
+                $this->processBankTicketPurchase($form_state, $cart, $valorTotal);
+
+                $form_state->setError($form, 'Boleto feito');
+                break;
+        }
+        return;
+
+        $this->userPrivateTempstore->delete('cart_items');
 
     }
 
@@ -203,29 +226,6 @@ class CheckoutForm extends FormBase {
      */
     public function submitForm(array &$form, FormStateInterface $form_state) {
         $frete = $form_state->get('frete') ?? ['preco' => 0, 'prazo' => 1];
-
-        $cart = $form_state->getBuildInfo()['args'][0];
-        $valorTotal = $form_state->getBuildInfo()['args'][1];
-
-        $cep = $form_state->getValue('zipcode');
-        $entrega = $form_state->getValue('entrega');
-
-        $valorTotal += $frete['preco'];
-
-        $mode = $form_state->getValue('mode');
-
-        switch ($mode) {
-            case 'creditCard':
-                $this->processCreditCardPurchase($form_state, $cart, $valorTotal);
-                break;
-            case 'bankTicket':
-                $this->processBankTicketPurchase($form_state, $cart, $valorTotal);
-                break;
-        }
-
-        return;
-
-        $this->userPrivateTempstore->delete('cart_items');
 
         \Drupal::messenger()->addMessage('Compra efetuada com sucesso!');
 
@@ -248,7 +248,7 @@ class CheckoutForm extends FormBase {
 
         $idRastreio = $this->registraEntrega($form_state, $cart_items);
 
-        $this->criaOrder($response['opHash'], 'creditCard', $idRastreio, $cart_items);        
+        $this->criaOrder($response['opHash'], 'creditCard', $idRastreio['codigoRastreio'], $cart_items);
     }
 
     protected function processBankTicketPurchase(FormStateInterface $form_state, array $cart_items, $valorTotal) {
@@ -272,25 +272,38 @@ class CheckoutForm extends FormBase {
             array_push($listPedidos, $value['id']);
         }
 
+        $created_date = time();
+
         $node = Node::create([
             'type' => 'order',
+            'langcode' => 'en',
+            'created' => [$created_date],
+            'changed' => [$created_date],
             'title' => 'Order',
-            'field_datapedido' => format_date(time(), 'custom', 'l j F Y'),
-            'field_idpagamento' => $idPagamento,
-            'field_idrastreio' => $idRastreio,
-            'field_idstatus' => '',
+            'field_datapedido' => [$created_date],
+            'field_idpagamento' => [$idPagamento],
+            'field_idrastreio' => [$idRastreio],
+            'field_idstatus' => [''],
             'field_listidproduto' => $listPedidos,
-            'field_meiopagamento' => $meioPagamento
+            'field_meiopagamento' => [$meioPagamento]
         ]);
+
         $node->save();
     }
 
     protected function registraEntrega($form_state, $cart_items) {
 
-        return cadastrarEntrega($cart_items[0]['id'], $form_state->getValue('entrega'), 
-            '13083872', $form_state->getValue('zipcode'), $cart_items[0]['peso'], 'Caixa', 
-            $cart_items[0]['dimensoes']['altura'], $cart_items[0]['dimensoes']['largura'], 
-            $cart_items[0]['dimensoes']['comprimento']);
+        return cadastrarEntrega(
+            $cart_items[0]['id'],
+            $form_state->getValue('entrega'),
+            '13083872',
+            $form_state->getValue('zipcode'),
+            (int) floatval($cart_items[0]['peso']) * 1000,
+            'Caixa',
+            $cart_items[0]['dimensoes']['altura'],
+            $cart_items[0]['dimensoes']['largura'],
+            $cart_items[0]['dimensoes']['comprimento']
+        );
 
     }
 }

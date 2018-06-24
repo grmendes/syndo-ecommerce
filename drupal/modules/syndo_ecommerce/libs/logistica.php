@@ -102,11 +102,13 @@ function cadastrarEntrega($idProduto, $tipoEntrega, $cepOrigem, $cepDestino, $pe
 
     // Check for errors
     if($response === FALSE){
-        die(curl_error($ch));
+        error_log(curl_error($ch));
     }
 
     // Print the date from the response
     $jsonRet = json_decode($response, true);
+
+    error_log('Entrega: ' . print_r($jsonRet, true));
 
     return $jsonRet['codigoRastreio'];
 }
